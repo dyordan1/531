@@ -2,9 +2,11 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import counterReducer from './counterSlice'
+import workoutReducer from './workoutSlice'
 
 const rootReducer = combineReducers({
   counter: counterReducer,
+  workout: workoutReducer,
 })
 
 const persistConfig = {
