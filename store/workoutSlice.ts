@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAction } from "@reduxjs/toolkit";
 import type { Lift, Maxes } from "@/types/workout";
 
 interface WorkoutState {
@@ -66,6 +66,14 @@ const workoutSlice = createSlice({
                 state.preferredAssistance[lift] = [...exercises, exercise];
             }
         },
+        setAllState: (state, action: PayloadAction<WorkoutState>) => {
+            for (const key in state) {
+                if (key in action.payload) {
+                    // @ts-expect-error This will mostly work
+                    state[key] = action.payload[key];
+                }
+            }
+        },
     },
 });
 
@@ -76,4 +84,9 @@ export const {
     setCurrentLift,
     togglePreferredAssistance,
 } = workoutSlice.actions;
+export const setAllState = createAction<{
+    maxes: Record<string, number>;
+    currentWeek: number;
+    currentLift: string;
+}>("workout/setAllState");
 export default workoutSlice.reducer;

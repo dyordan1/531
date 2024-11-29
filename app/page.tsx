@@ -1,15 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/hooks/redux";
+import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { WeightDisplay } from "@/components/WeightDisplay";
 import { WeightUnitToggle } from "@/components/WeightUnitToggle";
+import { setAllState } from "@/store/workoutSlice";
 
 export default function Home() {
     const router = useRouter();
-    const trainingMaxes = useAppSelector((state) => state.workout.maxes);
-    const currentWeek = useAppSelector((state) => state.workout.currentWeek);
-    const currentLift = useAppSelector((state) => state.workout.currentLift);
+    const dispatch = useAppDispatch();
+    const state = useAppSelector((state) => state.workout);
+    const trainingMaxes = state.maxes;
+    const currentWeek = state.currentWeek;
+    const currentLift = state.currentLift;
     const weightsInitialized = Object.values(trainingMaxes).every(
         (weight) => weight > 0,
     );
@@ -17,8 +20,42 @@ export default function Home() {
     const weekDisplay =
         currentWeek === 4 ? "Deload Week" : `Week ${currentWeek}`;
 
+    const handleExport = () => {
+        const blob = new Blob([JSON.stringify(state)], {
+            type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "531-workout-data.json";
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const handleImport = () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const state = JSON.parse(e.target?.result as string);
+                        dispatch(setAllState(state));
+                    } catch {
+                        alert("Invalid file format");
+                    }
+                };
+                reader.readAsText(file);
+            }
+        };
+        input.click();
+    };
+
     return (
-        <div className="grid grid-rows-[auto_1fr_auto] min-h-screen p-8 bg-gray-50">
+        <div className="grid grid-rows-[auto_1fr_auto] min-h-screen p-8 bg-gray-50 relative">
             <header className="text-center py-8">
                 <h1 className="text-4xl font-bold text-gray-800">
                     5/3/1 Workout Tracker
@@ -113,6 +150,49 @@ export default function Home() {
             </main>
 
             <WeightUnitToggle />
+
+            <div className="fixed bottom-4 right-4 flex gap-2">
+                <button
+                    onClick={handleImport}
+                    className="p-3 bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+                    title="Import Data"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                        />
+                    </svg>
+                </button>
+                <button
+                    onClick={handleExport}
+                    className="p-3 bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+                    title="Export Data"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                        />
+                    </svg>
+                </button>
+            </div>
 
             <footer className="text-center py-4 text-gray-500">
                 <p className="text-sm">Built for lifters, by lifters</p>
