@@ -10,11 +10,10 @@ import {
     REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import counterReducer from "./counterSlice";
 import workoutReducer from "./workoutSlice";
+import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 
 const rootReducer = combineReducers({
-    counter: counterReducer,
     workout: workoutReducer,
 });
 
@@ -22,9 +21,13 @@ const persistConfig = {
     key: "root",
     version: 1,
     storage,
+    stateReconciler: autoMergeLevel2,
 };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer<ReturnType<typeof rootReducer>>(
+    persistConfig,
+    rootReducer,
+);
 
 export const store = configureStore({
     reducer: persistedReducer,

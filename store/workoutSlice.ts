@@ -7,6 +7,12 @@ interface WorkoutState {
     currentLift: Lift;
     currentWeek: number;
     isOnboarded: boolean;
+    preferredAssistance: {
+        squat: string[];
+        bench: string[];
+        deadlift: string[];
+        press: string[];
+    };
 }
 
 const initialState: WorkoutState = {
@@ -20,6 +26,12 @@ const initialState: WorkoutState = {
     currentLift: "squat",
     currentWeek: 1,
     isOnboarded: false,
+    preferredAssistance: {
+        squat: ["Leg Press", "Leg Curls"],
+        bench: ["Dumbbell Chest Press", "Dumbbell Rows"],
+        deadlift: ["Good Mornings", "Hanging Leg Raises"],
+        press: ["Dip", "Chin-Ups"],
+    },
 };
 
 const workoutSlice = createSlice({
@@ -39,9 +51,29 @@ const workoutSlice = createSlice({
         setCurrentLift: (state, action: PayloadAction<Lift>) => {
             state.currentLift = action.payload;
         },
+        togglePreferredAssistance: (
+            state,
+            action: PayloadAction<{ lift: Lift; exercise: string }>,
+        ) => {
+            const { lift, exercise } = action.payload;
+            const exercises = state.preferredAssistance[lift];
+
+            if (exercises.includes(exercise)) {
+                state.preferredAssistance[lift] = exercises.filter(
+                    (e) => e !== exercise,
+                );
+            } else if (exercises.length < 3) {
+                state.preferredAssistance[lift] = [...exercises, exercise];
+            }
+        },
     },
 });
 
-export const { setMaxes, setWeightUnit, setCurrentWeek, setCurrentLift } =
-    workoutSlice.actions;
+export const {
+    setMaxes,
+    setWeightUnit,
+    setCurrentWeek,
+    setCurrentLift,
+    togglePreferredAssistance,
+} = workoutSlice.actions;
 export default workoutSlice.reducer;

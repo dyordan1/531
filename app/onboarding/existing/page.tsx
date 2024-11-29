@@ -18,7 +18,6 @@ export default function ExistingUserOnboarding() {
     const currentWeek = useAppSelector((state) => state.workout.currentWeek);
     const currentLift = useAppSelector((state) => state.workout.currentLift);
     const weightUnit = useAppSelector((state) => state.workout.weightUnit);
-    console.log(currentWeek);
 
     const handleMaxesChange =
         (lift: keyof Maxes) => (e: React.ChangeEvent<HTMLInputElement>) => {
