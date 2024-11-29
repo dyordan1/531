@@ -1,0 +1,3 @@
+# Don't touch locks
+pnpm-lock.yaml
+flake.lock
