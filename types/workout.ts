@@ -1,10 +1,12 @@
-export type Lift = "squat" | "bench" | "deadlift" | "press";
+export type Lift = "press" | "deadlift" | "bench" | "squat";
+
+export const liftOrder: Lift[] = ["press", "deadlift", "bench", "squat"];
 
 export interface Maxes {
-    squat: number;
-    bench: number;
-    deadlift: number;
     press: number;
+    deadlift: number;
+    bench: number;
+    squat: number;
 }
 
 export interface WorkoutSet {

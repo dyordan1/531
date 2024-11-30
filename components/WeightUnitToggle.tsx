@@ -1,3 +1,5 @@
+"use client";
+
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { setWeightUnit } from "@/store/workoutSlice";
 

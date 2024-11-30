@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setCurrentWeek, setMaxes, setCurrentLift } from "@/store/workoutSlice";
-import type { Maxes, Lift } from "@/types/workout";
+import { type Maxes, type Lift, liftOrder } from "@/types/workout";
 import { useAppSelector } from "@/hooks/redux";
-import { WeightUnitToggle } from "@/components/WeightUnitToggle";
 import { WeightDisplay } from "@/components/WeightDisplay";
 import { kgToLbs, lbsToKg } from "@/lib/weight";
 
@@ -18,6 +17,9 @@ export default function ExistingUserOnboarding() {
     const currentWeek = useAppSelector((state) => state.workout.currentWeek);
     const currentLift = useAppSelector((state) => state.workout.currentLift);
     const weightUnit = useAppSelector((state) => state.workout.weightUnit);
+    const weightsInitialized = Object.values(maxes).every(
+        (weight) => weight > 0,
+    );
 
     const handleMaxesChange =
         (lift: keyof Maxes) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,11 +53,22 @@ export default function ExistingUserOnboarding() {
             <div className="max-w-2xl mx-auto space-y-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">
-                        Enter Your Maxes
+                        Edit Your Program
                     </h1>
-                    <p className="mt-2 text-gray-600">
-                        Welcome to 5/3/1. Let&apos;s get your numbers set up.
-                    </p>
+                    {weightsInitialized && (
+                        <p className="mt-2 text-gray-600">
+                            You can edit your program manually here. The app
+                            will calculate your training maxes automatically
+                            based on history. If you find yourself on this page
+                            often, let me know!
+                        </p>
+                    )}
+                    {!weightsInitialized && (
+                        <p className="mt-2 text-gray-600">
+                            Welcome to 5/3/1. Let&apos;s get your numbers set
+                            up.
+                        </p>
+                    )}
                 </div>
 
                 <div className="bg-white rounded-lg p-6 shadow-sm">
@@ -187,7 +200,7 @@ export default function ExistingUserOnboarding() {
                             Upcoming Lift
                         </label>
                         <div className="grid grid-cols-4 gap-2">
-                            {Object.keys(maxes).map((lift) => (
+                            {liftOrder.map((lift) => (
                                 <button
                                     key={lift}
                                     onClick={() =>
@@ -214,8 +227,6 @@ export default function ExistingUserOnboarding() {
                     Start Training
                 </button>
             </div>
-
-            <WeightUnitToggle />
         </div>
     );
 }

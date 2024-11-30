@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { WeightDisplay } from "@/components/WeightDisplay";
-import { WeightUnitToggle } from "@/components/WeightUnitToggle";
 import { setAllState } from "@/store/workoutSlice";
+import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
+import { formatTime } from "@/components/WorkoutTimer";
+import { liftOrder } from "@/types/workout";
 
 export default function Home() {
     const router = useRouter();
@@ -16,6 +18,8 @@ export default function Home() {
     const weightsInitialized = Object.values(trainingMaxes).every(
         (weight) => weight > 0,
     );
+    const workoutHistory = useAppSelector((state) => state.workout.history);
+    const workoutDays = Object.keys(workoutHistory).slice(-10).reverse();
 
     const weekDisplay =
         currentWeek === 4 ? "Deload Week" : `Week ${currentWeek}`;
@@ -54,6 +58,11 @@ export default function Home() {
         input.click();
     };
 
+    const getTodayWorkout = () => {
+        const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+        return workoutHistory[today];
+    };
+
     return (
         <div className="grid grid-rows-[auto_1fr_auto] min-h-screen p-8 bg-gray-50 relative">
             <header className="text-center py-8">
@@ -73,39 +82,53 @@ export default function Home() {
                                 Your Program - {weekDisplay}
                             </h2>
                             <div className="grid grid-cols-2 gap-4">
-                                {Object.entries(trainingMaxes).map(
-                                    ([lift, weight]) => (
-                                        <div
-                                            key={lift}
-                                            className={`p-4 bg-white rounded-lg shadow-md relative ${
-                                                lift === currentLift
-                                                    ? "ring-2 ring-blue-500"
-                                                    : ""
-                                            }`}
-                                        >
-                                            {lift === currentLift && (
-                                                <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                                                    Up Next
-                                                </span>
-                                            )}
-                                            <h3 className="text-lg font-medium capitalize">
-                                                {lift}
-                                            </h3>
-                                            <p className="text-2xl font-bold text-blue-600">
-                                                <WeightDisplay
-                                                    weight={weight}
-                                                />
-                                            </p>
-                                        </div>
-                                    ),
-                                )}
+                                {liftOrder.map((lift) => (
+                                    <div
+                                        key={lift}
+                                        className={`p-4 bg-white rounded-lg shadow-md relative ${
+                                            lift === currentLift
+                                                ? "ring-2 ring-blue-500"
+                                                : ""
+                                        }`}
+                                    >
+                                        {lift === currentLift && (
+                                            <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                                                Up Next
+                                            </span>
+                                        )}
+                                        <h3 className="text-lg font-medium capitalize">
+                                            {lift}
+                                        </h3>
+                                        <p className="text-2xl font-bold text-blue-600">
+                                            <WeightDisplay
+                                                weight={trainingMaxes[lift]}
+                                            />
+                                        </p>
+                                    </div>
+                                ))}
                             </div>
-                            <button
-                                onClick={() => router.push("/workout")}
-                                className="w-full p-4 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-                            >
-                                Start Workout
-                            </button>
+                            {getTodayWorkout() ? (
+                                <div className="w-full p-4 bg-green-500 text-white rounded-lg shadow-md text-center">
+                                    <p className="text-xl font-bold">
+                                        🎉 Today's Workout Complete! 🎉
+                                    </p>
+                                    {getTodayWorkout().duration > 0 && (
+                                        <p className="text-sm mt-1">
+                                            Duration:{" "}
+                                            {formatTime(
+                                                getTodayWorkout().duration,
+                                            )}
+                                        </p>
+                                    )}
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => router.push("/workout")}
+                                    className="w-full p-4 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+                                >
+                                    Start Workout
+                                </button>
+                            )}
                             <button
                                 onClick={() =>
                                     router.push("/onboarding/existing")
@@ -146,10 +169,87 @@ export default function Home() {
                             </button>
                         </>
                     )}
+
+                    {weightsInitialized && workoutDays.length > 0 && (
+                        <div className="space-y-4">
+                            <h2 className="text-2xl font-semibold text-gray-800">
+                                Recent Workouts
+                            </h2>
+                            <div className="space-y-2">
+                                {workoutDays.map((day) => {
+                                    const workout = workoutHistory[day];
+                                    const mainSets = workout.mainSets;
+
+                                    return (
+                                        <button
+                                            key={day}
+                                            onClick={() =>
+                                                router.push(`/workout/${day}`)
+                                            }
+                                            className="w-full p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow text-left"
+                                        >
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex gap-1">
+                                                        {[0, 1, 2].map(
+                                                            (index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className={`w-6 h-6 flex items-center justify-center rounded-md ${
+                                                                        mainSets.failed.includes(
+                                                                            index,
+                                                                        )
+                                                                            ? "bg-red-200 text-red-800"
+                                                                            : mainSets.completed.includes(
+                                                                                    index,
+                                                                                )
+                                                                              ? "bg-green-200 text-green-800"
+                                                                              : "bg-gray-200 text-gray-400"
+                                                                    }`}
+                                                                >
+                                                                    {mainSets.failed.includes(
+                                                                        index,
+                                                                    ) ? (
+                                                                        <Cross1Icon className="w-4 h-4" />
+                                                                    ) : (
+                                                                        <CheckIcon className="w-4 h-4" />
+                                                                    )}
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-medium capitalize">
+                                                            {workout.lift}
+                                                        </h3>
+                                                        <p className="text-sm text-gray-600">
+                                                            {new Date(
+                                                                workout.date,
+                                                            ).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5 text-gray-400"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                >
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                                        clipRule="evenodd"
+                                                    />
+                                                </svg>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </main>
-
-            <WeightUnitToggle />
 
             <div className="fixed bottom-4 right-4 flex gap-2">
                 <button

@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 import { setMaxes } from "@/store/workoutSlice";
 import { useAppSelector } from "@/hooks/redux";
 import { WeightDisplay } from "@/components/WeightDisplay";
-import { WeightUnitToggle } from "@/components/WeightUnitToggle";
 import { kgToLbs, lbsToKg } from "@/lib/weight";
 
 type OnboardingStep = "intro" | "maxes" | "confirm";
@@ -166,8 +165,6 @@ export default function NewUserOnboarding() {
                     </div>
                 )}
             </div>
-
-            <WeightUnitToggle />
         </div>
     );
 }
