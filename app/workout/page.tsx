@@ -212,8 +212,8 @@ export default function WorkoutPage() {
                     />
 
                     <Section
-                        title="Assistance Work"
-                        contentClassName="grid grid-cols-2 gap-2"
+                        title={"Assistance Work"}
+                        contentClassName="grid grid-cols-1 sm:grid-cols-2 gap-4"
                         className="relative"
                     >
                         <Button
@@ -270,7 +270,7 @@ export default function WorkoutPage() {
                                 </Button>
                             </div>
                         ))}
-                        <p className="text-sm text-muted-foreground col-span-2 mt-4">
+                        <p className="text-sm text-muted-foreground sm:col-span-2 mt-4">
                             {showAllAssistance
                                 ? "Click to select up to 3 preferred exercises"
                                 : "Perform 50-75 total reps of your preferred exercises"}

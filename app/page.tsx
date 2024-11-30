@@ -99,7 +99,8 @@ export default function Home() {
                             <h2 className="text-2xl font-semibold text-primary">
                                 Your Program - {weekDisplay}
                             </h2>
-                            <div className="grid grid-cols-2 gap-4">
+
+                            <div className="grid sm:grid-cols-2 gap-4">
                                 {liftOrder.map((lift) => (
                                     <LiftCard
                                         key={lift}

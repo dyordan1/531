@@ -68,7 +68,7 @@ export default function ExistingUserOnboarding() {
             />
 
             <Section className="pt-4">
-                <div className="flex gap-4">
+                <div className="flex gap-4 sm:flex-row flex-col">
                     <Button
                         onClick={() => setMaxType("actual")}
                         variant={maxType === "actual" ? "default" : "outline"}
@@ -134,7 +134,7 @@ export default function ExistingUserOnboarding() {
 
             <Section className="pt-4">
                 <Label className="text-muted-foreground">Current Week</Label>
-                <div className="flex gap-2 mt-2">
+                <div className="grid grid-cols-2 sm:flex gap-2 mt-2">
                     {[1, 2, 3, 4].map((week) => (
                         <Button
                             key={week}
@@ -142,7 +142,7 @@ export default function ExistingUserOnboarding() {
                             variant={
                                 currentWeek === week ? "default" : "outline"
                             }
-                            className="flex-1"
+                            className="w-full"
                         >
                             {week === 4 ? "Deload" : `Week ${week}`}
                         </Button>
@@ -152,7 +152,7 @@ export default function ExistingUserOnboarding() {
                 <Label className="text-muted-foreground mt-6 block">
                     Upcoming Lift
                 </Label>
-                <div className="grid grid-cols-4 gap-2 mt-2">
+                <div className="grid grid-cols-2 sm:flex gap-2 mt-2">
                     {liftOrder.map((lift) => (
                         <Button
                             key={lift}
@@ -162,7 +162,7 @@ export default function ExistingUserOnboarding() {
                             variant={
                                 currentLift === lift ? "default" : "outline"
                             }
-                            className="capitalize"
+                            className="w-full capitalize"
                         >
                             {lift}
                         </Button>
