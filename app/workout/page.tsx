@@ -16,7 +16,12 @@ import { CheckIcon } from "@radix-ui/react-icons";
 import { Lift } from "@/types/workout";
 import { WorkoutDisplay } from "@/components/WorkoutDisplay";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Section } from "@/components/layout/Section";
 
 function getAssistanceWork(lift: string): string[] {
     switch (lift) {
@@ -203,143 +208,67 @@ export default function WorkoutPage() {
         <>
             {todayWorkout !== undefined && <WorkoutDisplay date={today} />}
             {todayWorkout === undefined && (
-                <div className="min-h-screen p-8">
-                    <div className="max-w-2xl mx-auto space-y-8">
-                        <header className="space-y-2">
+                <PageContainer>
+                    <PageHeader
+                        title={`${currentLift} Day - ${weekDisplay}`}
+                        showBackButton
+                    />
+
+                    <WorkoutTimer
+                        isRunning={isTimerRunning}
+                        elapsedTime={elapsedTime}
+                        onToggle={handleTimerToggle}
+                    />
+
+                    <Section
+                        title="Assistance Work"
+                        contentClassName="grid grid-cols-2 gap-2"
+                        className="relative"
+                    >
+                        <Button
+                            className="absolute right-2 top-2"
+                            variant="link"
+                            onClick={() =>
+                                setShowAllAssistance(!showAllAssistance)
+                            }
+                        >
+                            {showAllAssistance
+                                ? "Show Preferred"
+                                : "See All Options"}
+                        </Button>
+                        {displayedAssistance.map((exercise) => (
                             <Button
-                                variant="link"
-                                onClick={() => router.push("/")}
-                            >
-                                ← Back to Dashboard
-                            </Button>
-                            <h1 className="text-3xl font-bold text-primary capitalize">
-                                {currentLift} Day - {weekDisplay}
-                            </h1>
-                        </header>
-
-                        <Card className="p-6">
-                            <WorkoutTimer
-                                isRunning={isTimerRunning}
-                                elapsedTime={elapsedTime}
-                                onToggle={handleTimerToggle}
-                            />
-                        </Card>
-
-                        <Card className="p-6">
-                            <section className="rounded-lg shadow-sm p-6">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-xl font-semibold">
-                                        Assistance Work
-                                    </h2>
-                                    <Button
-                                        variant="link"
-                                        onClick={() =>
-                                            setShowAllAssistance(
-                                                !showAllAssistance,
-                                            )
-                                        }
-                                    >
-                                        {showAllAssistance
-                                            ? "Show Preferred"
-                                            : "See All Options"}
-                                    </Button>
-                                </div>
-                                <ul className="space-y-2">
-                                    {displayedAssistance.map(
-                                        (exercise, index) => (
-                                            <li
-                                                key={index}
-                                                className="p-3 rounded-lg flex items-center gap-3"
-                                            >
-                                                {preferredAssistance.includes(
-                                                    exercise,
-                                                ) && (
-                                                    <button
-                                                        onClick={() =>
-                                                            toggleAssistanceCompletion(
-                                                                exercise,
-                                                            )
-                                                        }
-                                                        className={`w-6 h-6 flex items-center justify-center rounded-md transition-colors ${
-                                                            completedAssistance.includes(
-                                                                exercise,
-                                                            )
-                                                                ? "bg-green-200 text-green-800"
-                                                                : "bg-secondary text-secondary-foreground hover:bg-green-100"
-                                                        }`}
-                                                    >
-                                                        <CheckIcon className="w-4 h-4" />
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={() =>
-                                                        handleAssistanceToggle(
-                                                            exercise,
-                                                        )
-                                                    }
-                                                    className={`flex-1 flex justify-between items-center ${
-                                                        preferredAssistance.includes(
-                                                            exercise,
-                                                        )
-                                                            ? "text-primary"
-                                                            : "text-muted-foreground"
-                                                    }`}
-                                                >
-                                                    <span>{exercise}</span>
-                                                    {preferredAssistance.includes(
-                                                        exercise,
-                                                    ) && (
-                                                        <span className="text-primary">
-                                                            ★
-                                                        </span>
-                                                    )}
-                                                </button>
-                                            </li>
-                                        ),
-                                    )}
-                                </ul>
-                                {showAllAssistance ? (
-                                    <p className="text-secondary-foreground text-sm mt-4">
-                                        Click to select up to 3 preferred
-                                        exercises
-                                    </p>
-                                ) : (
-                                    <p className="text-secondary-foreground text-sm mt-4">
-                                        Perform 50-75 total reps of your
-                                        preferred exercises at a moderate
-                                        intensity. This is your warmup.
-                                    </p>
+                                key={exercise}
+                                variant="outline"
+                                className={cn(
+                                    "justify-between",
+                                    preferredAssistance.includes(exercise) &&
+                                        "border-primary",
                                 )}
-                            </section>
-                        </Card>
+                                onClick={() => handleAssistanceToggle(exercise)}
+                            >
+                                <span>{exercise}</span>
+                                {preferredAssistance.includes(exercise) && (
+                                    <Badge variant="secondary">Preferred</Badge>
+                                )}
+                            </Button>
+                        ))}
+                        <p className="text-sm text-muted-foreground col-span-2 mt-4">
+                            {showAllAssistance
+                                ? "Click to select up to 3 preferred exercises"
+                                : "Perform 50-75 total reps of your preferred exercises"}
+                        </p>
+                    </Section>
 
-                        <Card className="p-6">
-                            <WorkoutSets
-                                sets={workoutSets}
-                                completedSets={completedSets}
-                                failedSets={failedSets}
-                                onToggleComplete={toggleSetCompletion}
-                                onToggleFail={toggleSetFailure}
-                                isDeloadWeek={currentWeek === 4}
-                            />
-                        </Card>
-                    </div>
-                </div>
-            )}
-            {!isWorkoutComplete && (
-                <div className="bg-secondary fixed bottom-5 left-1/2 -translate-x-1/2 text-secondary-foreground py-4 px-8 text-center text-xl font-bold shadow-lg rounded-lg">
-                    Workout pending...
-                    {isTimerRunning && (
-                        <span className="ml-2 font-mono">
-                            ({formatTime(elapsedTime)})
-                        </span>
-                    )}
-                </div>
-            )}
-            {isWorkoutComplete && (
-                <div className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-green-500 text-white py-4 px-8 text-center text-xl font-bold shadow-lg rounded-lg">
-                    🎉 Workout Recorded! 🎉
-                </div>
+                    <WorkoutSets
+                        sets={workoutSets}
+                        completedSets={completedSets}
+                        failedSets={failedSets}
+                        onToggleComplete={toggleSetCompletion}
+                        onToggleFail={toggleSetFailure}
+                        isDeloadWeek={currentWeek === 4}
+                    />
+                </PageContainer>
             )}
         </>
     );

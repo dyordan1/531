@@ -1,6 +1,9 @@
 import { WorkoutSet } from "@/types/workout";
 import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { WeightDisplay } from "@/components/WeightDisplay";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface WorkoutSetsProps {
     sets: WorkoutSet[];
@@ -22,61 +25,63 @@ export function WorkoutSets({
     isDeloadWeek = false,
 }: WorkoutSetsProps) {
     return (
-        <>
-            <h2 className="text-xl font-semibold mb-4">Main Sets</h2>
-            <div className="space-y-4">
+        <Card>
+            <CardHeader>
+                <CardTitle>Main Sets</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
                 {sets.map((set, index) => (
                     <div
                         key={index}
-                        className="flex items-center justify-between p-4 rounded-lg"
+                        className={cn(
+                            "flex items-center justify-between p-4 rounded-lg border",
+                            completedSets.includes(index) && "border-green-500",
+                            failedSets.includes(index) && "border-red-500",
+                        )}
                     >
                         <div className="flex items-center gap-3">
                             {!readOnly && (
                                 <div className="flex gap-2">
-                                    <button
+                                    <Button
                                         onClick={() =>
                                             onToggleComplete?.(index)
                                         }
-                                        className={`w-6 h-6 flex items-center justify-center rounded-md transition-colors ${
+                                        variant={
                                             completedSets.includes(index)
-                                                ? "bg-green-200 text-green-800"
-                                                : "bg-secondary text-secondary-foreground hover:bg-green-100"
-                                        }`}
+                                                ? "default"
+                                                : "secondary"
+                                        }
+                                        size="icon"
                                     >
                                         <CheckIcon className="w-4 h-4" />
-                                    </button>
-                                    <button
+                                    </Button>
+                                    <Button
                                         onClick={() => onToggleFail?.(index)}
-                                        className={`w-6 h-6 flex items-center justify-center rounded-md transition-colors ${
+                                        variant={
                                             failedSets.includes(index)
-                                                ? "bg-red-200 text-red-800"
-                                                : "bg-secondary text-secondary-foreground hover:bg-red-100"
-                                        }`}
+                                                ? "destructive"
+                                                : "secondary"
+                                        }
+                                        size="icon"
                                     >
                                         <Cross1Icon className="w-4 h-4" />
-                                    </button>
+                                    </Button>
                                 </div>
                             )}
-                            <span
-                                className={`text-lg font-medium ${
-                                    completedSets.includes(index)
-                                        ? "text-green-600"
-                                        : failedSets.includes(index)
-                                          ? "text-red-600"
-                                          : ""
-                                }`}
-                            >
-                                Set {index + 1}
-                            </span>
-                            <span className="text-secondary-foreground">
-                                ({Math.round(set.percentage * 100)}%)
-                            </span>
+                            <div className="space-y-1">
+                                <div className="font-medium">
+                                    Set {index + 1}
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                    ({Math.round(set.percentage * 100)}%)
+                                </div>
+                            </div>
                         </div>
                         <div className="text-right">
                             <div className="text-2xl font-bold">
                                 <WeightDisplay weight={set.weight} />
                             </div>
-                            <div className="text-secondary-foreground">
+                            <div className="text-sm text-muted-foreground">
                                 {index === sets.length - 1 && !isDeloadWeek
                                     ? `AMRAP (${set.reps}+ reps)`
                                     : `${set.reps} reps`}
@@ -84,7 +89,7 @@ export function WorkoutSets({
                         </div>
                     </div>
                 ))}
-            </div>
-        </>
+            </CardContent>
+        </Card>
     );
 }

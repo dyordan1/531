@@ -1,4 +1,6 @@
 import { PlayIcon, StopIcon } from "@radix-ui/react-icons";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface WorkoutTimerProps {
     isRunning: boolean;
@@ -20,31 +22,30 @@ export function WorkoutTimer({
     readOnly = false,
 }: WorkoutTimerProps) {
     return (
-        <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">
-                {readOnly ? "Workout Duration" : "(Optional) Start Timer"}
-            </h2>
-            <div className="flex items-center gap-4">
+        <Card>
+            <CardHeader className="pb-2">
+                <h2 className="text-xl font-semibold">
+                    {readOnly ? "Workout Duration" : "(Optional) Start Timer"}
+                </h2>
+            </CardHeader>
+            <CardContent className="flex items-center justify-between pt-0">
                 <span className="text-2xl font-mono">
                     {formatTime(elapsedTime)}
                 </span>
                 {!readOnly && onToggle && (
-                    <button
+                    <Button
                         onClick={onToggle}
-                        className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
-                            isRunning
-                                ? "bg-red-200 text-red-800 hover:bg-red-300"
-                                : "bg-green-200 text-green-800 hover:bg-green-300"
-                        }`}
+                        variant={isRunning ? "destructive" : "default"}
+                        size="icon"
                     >
                         {isRunning ? (
                             <StopIcon className="w-5 h-5" />
                         ) : (
                             <PlayIcon className="w-5 h-5" />
                         )}
-                    </button>
+                    </Button>
                 )}
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 }

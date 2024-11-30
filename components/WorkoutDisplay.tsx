@@ -5,7 +5,13 @@ import { useAppSelector } from "@/hooks/redux";
 import { WorkoutTimer } from "@/components/WorkoutTimer";
 import { WorkoutSets } from "@/components/WorkoutSets";
 import { getWorkoutSets } from "@/lib/workout";
-import { Card } from "./ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Section } from "@/components/layout/Section";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export function WorkoutDisplay({ date }: { date: string }) {
     const router = useRouter();
@@ -34,64 +40,47 @@ export function WorkoutDisplay({ date }: { date: string }) {
         currentWeek === 4 ? "Deload Week" : `Week ${currentWeek}`;
 
     return (
-        <div className="min-h-screen p-8">
-            <div className="max-w-2xl mx-auto space-y-8">
-                <header className="space-y-2">
-                    <button onClick={() => router.push("/")}>
-                        ← Back to Dashboard
-                    </button>
-                    <h1 className="text-3xl font-bold text-primary capitalize">
-                        {currentLift} Day - {weekDisplay}
-                    </h1>
-                    <p className="text-secondary-foreground">
-                        Completed on {new Date(workout.date).toLocaleString()}
-                    </p>
-                </header>
+        <PageContainer>
+            <PageHeader
+                title={`${currentLift} Day - ${weekDisplay}`}
+                description={`Completed on ${new Date(
+                    workout.date,
+                ).toLocaleString()}`}
+                showBackButton
+            />
 
-                {duration !== 0 && (
-                    <Card className="p-6">
-                        <WorkoutTimer
-                            isRunning={false}
-                            elapsedTime={duration}
-                            readOnly={true}
-                        />
-                    </Card>
-                )}
+            {duration !== 0 && (
+                <WorkoutTimer
+                    isRunning={false}
+                    elapsedTime={duration}
+                    readOnly={true}
+                />
+            )}
 
-                <Card className="p-6">
-                    <WorkoutSets
-                        sets={workoutSets}
-                        completedSets={mainSets.completed}
-                        failedSets={mainSets.failed}
-                        readOnly={true}
-                        isDeloadWeek={currentWeek === 4}
-                    />
-                </Card>
+            <WorkoutSets
+                sets={workoutSets}
+                completedSets={mainSets.completed}
+                failedSets={mainSets.failed}
+                readOnly={true}
+                isDeloadWeek={currentWeek === 4}
+            />
 
-                <Card className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">
-                        Completed Assistance Work
-                    </h2>
-                    <ul className="space-y-2">
-                        {selectedAssistance.map((exercise, index) => (
-                            <li
-                                key={index}
-                                className="p-3 rounded-lg flex items-center gap-3"
-                            >
-                                <span
-                                    className={`${
-                                        completedAssistance.includes(exercise)
-                                            ? "text-green-600"
-                                            : "text-secondary-foreground"
-                                    }`}
-                                >
-                                    {exercise}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                </Card>
-            </div>
-        </div>
+            <Section title="Completed Assistance Work">
+                <div className="space-y-2">
+                    {selectedAssistance.map((exercise, index) => (
+                        <div
+                            key={index}
+                            className={cn(
+                                completedAssistance.includes(exercise) &&
+                                    "border-green-500",
+                                "flex items-center justify-between p-3 rounded-lg border",
+                            )}
+                        >
+                            <span className="capitalize">{exercise}</span>
+                        </div>
+                    ))}
+                </div>
+            </Section>
+        </PageContainer>
     );
 }

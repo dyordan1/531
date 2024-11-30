@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/hooks/redux";
-import { kgToLbs } from "@/lib/weight";
+import { lbsToKg } from "@/lib/weight";
 
 interface WeightDisplayProps {
     weight: number;
@@ -14,7 +14,7 @@ export function WeightDisplay({
 }: WeightDisplayProps) {
     const weightUnit = useAppSelector((state) => state.workout.weightUnit);
 
-    const displayWeight = weightUnit === "kg" ? kgToLbs(weight) : weight;
+    const displayWeight = weightUnit === "kg" ? lbsToKg(weight) : weight;
 
     return (
         <span className={className}>
