@@ -7,6 +7,8 @@ import { setMaxes } from "@/store/workoutSlice";
 import { useAppSelector } from "@/hooks/redux";
 import { WeightDisplay } from "@/components/WeightDisplay";
 import { kgToLbs, lbsToKg } from "@/lib/weight";
+import { Button } from "@/components/ui/button";
+import { LiftCard } from "@/components/LiftCard";
 
 type OnboardingStep = "intro" | "maxes" | "confirm";
 
@@ -32,11 +34,11 @@ export default function NewUserOnboarding() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8">
+        <div className="min-h-screen p-8">
             <div className="max-w-2xl mx-auto">
                 {step === "intro" && (
                     <div className="space-y-6">
-                        <h1 className="text-3xl font-bold text-gray-900">
+                        <h1 className="text-3xl font-bold text-primary">
                             Welcome to 5/3/1
                         </h1>
                         <div className="prose prose-blue">
@@ -63,13 +65,14 @@ export default function NewUserOnboarding() {
                                 </li>
                             </ul>
                         </div>
-                        <button
+                        <Button
+                            className="w-full"
+                            size="lg"
                             onClick={() => setStep("maxes")}
-                            className="w-full p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                         >
                             Let&apos;s Get Started
-                        </button>
-                        <p className="text-sm text-gray-600 mt-2">
+                        </Button>
+                        <p className="text-sm text-secondary-foreground mt-2">
                             * The app will help you track your training days.
                             Remember to avoid training more than 2 consecutive
                             days, and don&apos;t worry if it takes longer than 7
@@ -81,10 +84,10 @@ export default function NewUserOnboarding() {
 
                 {step === "maxes" && (
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold text-gray-900">
+                        <h2 className="text-2xl font-bold text-primary">
                             Enter Your Current Maxes
                         </h2>
-                        <p className="text-gray-600">
+                        <p className="text-secondary-foreground">
                             Enter your one-rep max for each lift. If you
                             don&apos;t know your exact max, enter a weight
                             you&apos;re confident you could lift once with good
@@ -94,7 +97,7 @@ export default function NewUserOnboarding() {
                         <div className="space-y-4">
                             {Object.entries(maxes).map(([lift, value]) => (
                                 <div key={lift} className="flex flex-col">
-                                    <label className="text-sm font-medium text-gray-700 capitalize">
+                                    <label className="text-sm font-medium text-secondary-foreground capitalize">
                                         {lift} ({weightUnit})
                                     </label>
                                     <input
@@ -119,49 +122,45 @@ export default function NewUserOnboarding() {
                             ))}
                         </div>
 
-                        <button
+                        <Button
                             onClick={() => setStep("confirm")}
-                            className="w-full p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            className="w-full"
+                            size="lg"
                             disabled={Object.values(maxes).some((v) => !v)}
                         >
                             Calculate Training Maxes
-                        </button>
+                        </Button>
                     </div>
                 )}
 
                 {step === "confirm" && (
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold text-gray-900">
+                        <h2 className="text-2xl font-bold text-primary">
                             Your Training Maxes
                         </h2>
-                        <p className="text-gray-600">
+                        <p className="text-secondary-foreground">
                             These are your training maxes (90% of your entered
                             maxes). We&apos;ll use these numbers to calculate
                             your working sets.
                         </p>
 
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
                             {Object.entries(maxes).map(([lift, value]) => (
-                                <div
+                                <LiftCard
                                     key={lift}
-                                    className="p-4 bg-white rounded-lg shadow"
-                                >
-                                    <div className="font-medium capitalize">
-                                        {lift}
-                                    </div>
-                                    <div className="text-2xl font-bold text-blue-600">
-                                        <WeightDisplay weight={value} />
-                                    </div>
-                                </div>
+                                    lift={lift}
+                                    weight={value}
+                                />
                             ))}
                         </div>
 
-                        <button
+                        <Button
                             onClick={handleComplete}
-                            className="w-full p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            className="w-full"
+                            size="lg"
                         >
                             Start Your First Workout
-                        </button>
+                        </Button>
                     </div>
                 )}
             </div>

@@ -22,13 +22,13 @@ export function WorkoutSets({
     isDeloadWeek = false,
 }: WorkoutSetsProps) {
     return (
-        <section className="bg-white rounded-lg shadow-sm p-6">
+        <>
             <h2 className="text-xl font-semibold mb-4">Main Sets</h2>
             <div className="space-y-4">
                 {sets.map((set, index) => (
                     <div
                         key={index}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                        className="flex items-center justify-between p-4 rounded-lg"
                     >
                         <div className="flex items-center gap-3">
                             {!readOnly && (
@@ -40,7 +40,7 @@ export function WorkoutSets({
                                         className={`w-6 h-6 flex items-center justify-center rounded-md transition-colors ${
                                             completedSets.includes(index)
                                                 ? "bg-green-200 text-green-800"
-                                                : "bg-gray-200 text-gray-400 hover:bg-gray-300"
+                                                : "bg-secondary text-secondary-foreground hover:bg-green-100"
                                         }`}
                                     >
                                         <CheckIcon className="w-4 h-4" />
@@ -50,7 +50,7 @@ export function WorkoutSets({
                                         className={`w-6 h-6 flex items-center justify-center rounded-md transition-colors ${
                                             failedSets.includes(index)
                                                 ? "bg-red-200 text-red-800"
-                                                : "bg-gray-200 text-gray-400 hover:bg-gray-300"
+                                                : "bg-secondary text-secondary-foreground hover:bg-red-100"
                                         }`}
                                     >
                                         <Cross1Icon className="w-4 h-4" />
@@ -68,15 +68,15 @@ export function WorkoutSets({
                             >
                                 Set {index + 1}
                             </span>
-                            <span className="text-gray-600">
+                            <span className="text-secondary-foreground">
                                 ({Math.round(set.percentage * 100)}%)
                             </span>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-bold text-blue-600">
+                            <div className="text-2xl font-bold">
                                 <WeightDisplay weight={set.weight} />
                             </div>
-                            <div className="text-gray-600">
+                            <div className="text-secondary-foreground">
                                 {index === sets.length - 1 && !isDeloadWeek
                                     ? `AMRAP (${set.reps}+ reps)`
                                     : `${set.reps} reps`}
@@ -85,6 +85,6 @@ export function WorkoutSets({
                     </div>
                 ))}
             </div>
-        </section>
+        </>
     );
 }

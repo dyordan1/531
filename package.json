@@ -17,7 +17,8 @@
         "clsx": "^2.1.1",
         "date-fns": "^4.1.0",
         "lucide-react": "^0.462.0",
-        "next": "14.2.16",
+        "next": "15.0.3",
+        "next-themes": "^0.4.3",
         "react": "^18",
         "react-day-picker": "8.10.1",
         "react-dom": "^18",
@@ -34,7 +35,7 @@
         "eslint-config-next": "14.2.16",
         "postcss": "^8",
         "tailwindcss": "^3.4.1",
-        "typescript": "^5"
+        "typescript": "^5.6.3"
     },
     "packageManager": "pnpm@9.14.4+sha256.26a726b633b629a3fabda006f696ae4260954a3632c8054112d7ae89779e5f9a"
 }

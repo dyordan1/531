@@ -15,6 +15,8 @@ import { getWorkoutSets } from "@/lib/workout";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { Lift } from "@/types/workout";
 import { WorkoutDisplay } from "@/components/WorkoutDisplay";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 function getAssistanceWork(lift: string): string[] {
     switch (lift) {
@@ -82,10 +84,8 @@ export default function WorkoutPage() {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const [showAllAssistance, setShowAllAssistance] = useState(false);
-    const stateWeek = useAppSelector((state) => state.workout.currentWeek);
-    const stateLift = useAppSelector((state) => state.workout.currentLift);
-    const [currentWeek, setCurrentWeek] = useState(stateWeek);
-    const [currentLift, setCurrentLift] = useState(stateLift);
+    const currentWeek = useAppSelector((state) => state.workout.currentWeek);
+    const currentLift = useAppSelector((state) => state.workout.currentLift);
     const maxes = useAppSelector((state) => state.workout.maxes);
     const preferredAssistance = useAppSelector(
         (state) => state.workout.preferredAssistance[currentLift],
@@ -203,53 +203,53 @@ export default function WorkoutPage() {
         <>
             {todayWorkout !== undefined && <WorkoutDisplay date={today} />}
             {todayWorkout === undefined && (
-                <div className="min-h-screen bg-gray-50 p-8">
+                <div className="min-h-screen p-8">
                     <div className="max-w-2xl mx-auto space-y-8">
                         <header className="space-y-2">
-                            <button
+                            <Button
+                                variant="link"
                                 onClick={() => router.push("/")}
-                                className="text-blue-600 hover:text-blue-700"
                             >
                                 ← Back to Dashboard
-                            </button>
-                            <h1 className="text-3xl font-bold text-gray-900 capitalize">
+                            </Button>
+                            <h1 className="text-3xl font-bold text-primary capitalize">
                                 {currentLift} Day - {weekDisplay}
                             </h1>
                         </header>
 
-                        <section className="bg-white rounded-lg shadow-sm p-6">
+                        <Card className="p-6">
                             <WorkoutTimer
                                 isRunning={isTimerRunning}
                                 elapsedTime={elapsedTime}
                                 onToggle={handleTimerToggle}
                             />
-                        </section>
+                        </Card>
 
-                        <div className="space-y-8">
-                            <section className="bg-white rounded-lg shadow-sm p-6">
+                        <Card className="p-6">
+                            <section className="rounded-lg shadow-sm p-6">
                                 <div className="flex justify-between items-center mb-4">
                                     <h2 className="text-xl font-semibold">
                                         Assistance Work
                                     </h2>
-                                    <button
+                                    <Button
+                                        variant="link"
                                         onClick={() =>
                                             setShowAllAssistance(
                                                 !showAllAssistance,
                                             )
                                         }
-                                        className="text-blue-600 hover:text-blue-700 text-sm"
                                     >
                                         {showAllAssistance
                                             ? "Show Preferred"
                                             : "See All Options"}
-                                    </button>
+                                    </Button>
                                 </div>
                                 <ul className="space-y-2">
                                     {displayedAssistance.map(
                                         (exercise, index) => (
                                             <li
                                                 key={index}
-                                                className="p-3 bg-gray-50 rounded-lg flex items-center gap-3"
+                                                className="p-3 rounded-lg flex items-center gap-3"
                                             >
                                                 {preferredAssistance.includes(
                                                     exercise,
@@ -265,7 +265,7 @@ export default function WorkoutPage() {
                                                                 exercise,
                                                             )
                                                                 ? "bg-green-200 text-green-800"
-                                                                : "bg-gray-200 text-gray-400 hover:bg-gray-300"
+                                                                : "bg-secondary text-secondary-foreground hover:bg-green-100"
                                                         }`}
                                                     >
                                                         <CheckIcon className="w-4 h-4" />
@@ -281,15 +281,15 @@ export default function WorkoutPage() {
                                                         preferredAssistance.includes(
                                                             exercise,
                                                         )
-                                                            ? "text-blue-600"
-                                                            : ""
+                                                            ? "text-primary"
+                                                            : "text-muted-foreground"
                                                     }`}
                                                 >
                                                     <span>{exercise}</span>
                                                     {preferredAssistance.includes(
                                                         exercise,
                                                     ) && (
-                                                        <span className="text-blue-500">
+                                                        <span className="text-primary">
                                                             ★
                                                         </span>
                                                     )}
@@ -299,19 +299,21 @@ export default function WorkoutPage() {
                                     )}
                                 </ul>
                                 {showAllAssistance ? (
-                                    <p className="text-gray-600 text-sm mt-4">
+                                    <p className="text-secondary-foreground text-sm mt-4">
                                         Click to select up to 3 preferred
                                         exercises
                                     </p>
                                 ) : (
-                                    <p className="text-gray-600 text-sm mt-4">
+                                    <p className="text-secondary-foreground text-sm mt-4">
                                         Perform 50-75 total reps of your
                                         preferred exercises at a moderate
                                         intensity. This is your warmup.
                                     </p>
                                 )}
                             </section>
+                        </Card>
 
+                        <Card className="p-6">
                             <WorkoutSets
                                 sets={workoutSets}
                                 completedSets={completedSets}
@@ -320,12 +322,12 @@ export default function WorkoutPage() {
                                 onToggleFail={toggleSetFailure}
                                 isDeloadWeek={currentWeek === 4}
                             />
-                        </div>
+                        </Card>
                     </div>
                 </div>
             )}
             {!isWorkoutComplete && (
-                <div className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-gray-500 text-white py-4 px-8 text-center text-xl font-bold shadow-lg rounded-lg">
+                <div className="bg-secondary fixed bottom-5 left-1/2 -translate-x-1/2 text-secondary-foreground py-4 px-8 text-center text-xl font-bold shadow-lg rounded-lg">
                     Workout pending...
                     {isTimerRunning && (
                         <span className="ml-2 font-mono">

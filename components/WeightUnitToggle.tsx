@@ -2,34 +2,29 @@
 
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { setWeightUnit } from "@/store/workoutSlice";
+import { Button } from "@/components/ui/button";
 
 export function WeightUnitToggle() {
     const dispatch = useAppDispatch();
     const weightUnit = useAppSelector((state) => state.workout.weightUnit);
 
     return (
-        <div className="fixed bottom-4 left-4 bg-white rounded-lg shadow-lg p-2">
+        <div className="fixed bottom-4 left-4 rounded-lg shadow-lg p-2">
             <div className="flex space-x-1">
-                <button
+                <Button
                     onClick={() => dispatch(setWeightUnit("lbs"))}
-                    className={`px-3 py-1 rounded ${
-                        weightUnit === "lbs"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-100 text-gray-700"
-                    }`}
+                    variant={weightUnit === "lbs" ? "default" : "secondary"}
+                    size="sm"
                 >
                     lbs
-                </button>
-                <button
+                </Button>
+                <Button
                     onClick={() => dispatch(setWeightUnit("kg"))}
-                    className={`px-3 py-1 rounded ${
-                        weightUnit === "kg"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-100 text-gray-700"
-                    }`}
+                    variant={weightUnit === "kg" ? "default" : "secondary"}
+                    size="sm"
                 >
                     kg
-                </button>
+                </Button>
             </div>
         </div>
     );

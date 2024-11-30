@@ -8,7 +8,8 @@ import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { formatTime } from "@/components/WorkoutTimer";
 import { liftOrder } from "@/types/workout";
 import { Calendar } from "@/components/ui/calendar";
-import { isSameDay } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { LiftCard } from "@/components/LiftCard";
 
 export default function Home() {
     const router = useRouter();
@@ -84,12 +85,10 @@ export default function Home() {
     };
 
     return (
-        <div className="grid grid-rows-[auto_1fr_auto] min-h-screen p-8 bg-gray-50 relative">
+        <div className="grid grid-rows-[auto_1fr_auto] min-h-screen p-8 relative">
             <header className="text-center py-8">
-                <h1 className="text-4xl font-bold text-gray-800">
-                    5/3/1 Workout Tracker
-                </h1>
-                <p className="mt-2 text-gray-600">
+                <h1 className="text-4xl font-bold">5/3/1 Workout Tracker</h1>
+                <p className="mt-2 text-secondary-foreground">
                     Simplifying your strength journey
                 </p>
             </header>
@@ -98,37 +97,21 @@ export default function Home() {
                 <div className="max-w-md w-full space-y-6">
                     {weightsInitialized ? (
                         <div className="space-y-4">
-                            <h2 className="text-2xl font-semibold text-gray-800">
+                            <h2 className="text-2xl font-semibold text-primary">
                                 Your Program - {weekDisplay}
                             </h2>
                             <div className="grid grid-cols-2 gap-4">
                                 {liftOrder.map((lift) => (
-                                    <div
+                                    <LiftCard
                                         key={lift}
-                                        className={`p-4 bg-white rounded-lg shadow-md relative ${
-                                            lift === currentLift
-                                                ? "ring-2 ring-blue-500"
-                                                : ""
-                                        }`}
-                                    >
-                                        {lift === currentLift && (
-                                            <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                                                Up Next
-                                            </span>
-                                        )}
-                                        <h3 className="text-lg font-medium capitalize">
-                                            {lift}
-                                        </h3>
-                                        <p className="text-2xl font-bold text-blue-600">
-                                            <WeightDisplay
-                                                weight={trainingMaxes[lift]}
-                                            />
-                                        </p>
-                                    </div>
+                                        lift={lift}
+                                        weight={trainingMaxes[lift]}
+                                        isActive={lift === currentLift}
+                                    />
                                 ))}
                             </div>
                             {getTodayWorkout() ? (
-                                <div className="w-full p-4 bg-green-500 text-white rounded-lg shadow-md text-center">
+                                <div className="w-full p-4 bg-green-500 text-primary rounded-lg shadow-md text-center">
                                     <p className="text-xl font-bold">
                                         🎉 Today's Workout Complete! 🎉
                                     </p>
@@ -142,27 +125,31 @@ export default function Home() {
                                     )}
                                 </div>
                             ) : (
-                                <button
+                                <Button
                                     onClick={() => router.push("/workout")}
-                                    className="w-full p-4 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+                                    className="w-full"
+                                    size="lg"
                                 >
                                     Start Workout
-                                </button>
+                                </Button>
                             )}
-                            <button
+                            <Button
                                 onClick={() =>
                                     router.push("/onboarding/existing")
                                 }
-                                className="w-full p-4 bg-gray-700 text-white rounded-lg shadow-md hover:bg-gray-800 transition-colors"
+                                className="w-full"
+                                size="lg"
+                                variant="secondary"
                             >
                                 Edit Program
-                            </button>
+                            </Button>
                         </div>
                     ) : (
                         <>
-                            <button
+                            <Button
                                 onClick={() => router.push("/onboarding/new")}
-                                className="w-full p-6 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+                                className="w-full h-auto py-6 flex flex-col items-center"
+                                size="lg"
                             >
                                 <h2 className="text-xl font-semibold">
                                     I&apos;m New to 5/3/1
@@ -171,13 +158,15 @@ export default function Home() {
                                     Get started with a guided setup and learn
                                     the program basics
                                 </p>
-                            </button>
+                            </Button>
 
-                            <button
+                            <Button
                                 onClick={() =>
                                     router.push("/onboarding/existing")
                                 }
-                                className="w-full p-6 bg-gray-700 text-white rounded-lg shadow-md hover:bg-gray-800 transition-colors"
+                                className="w-full h-auto py-6 flex flex-col items-center"
+                                size="lg"
+                                variant="secondary"
                             >
                                 <h2 className="text-xl font-semibold">
                                     I Know My Numbers
@@ -186,13 +175,13 @@ export default function Home() {
                                     Jump right in with your existing training
                                     maxes
                                 </p>
-                            </button>
+                            </Button>
                         </>
                     )}
 
                     {weightsInitialized && workoutDays.length > 0 && (
                         <div className="space-y-4 w-full">
-                            <h2 className="text-2xl font-semibold text-gray-800">
+                            <h2 className="text-2xl font-semibold text-primary">
                                 Workout History
                             </h2>
 
@@ -258,40 +247,45 @@ export default function Home() {
                                         workout.mainSets.failed.length > 0;
 
                                     return (
-                                        <button
+                                        <Button
                                             key={day}
                                             onClick={() =>
                                                 router.push(`/workout/${day}`)
                                             }
-                                            className={`w-full p-4 rounded-lg shadow-sm flex items-center justify-between ${
+                                            variant={
                                                 failed
-                                                    ? "bg-red-50"
-                                                    : "bg-green-50"
+                                                    ? "destructive"
+                                                    : "secondary"
+                                            }
+                                            className={`w-full justify-between h-auto py-3 ${
+                                                failed
+                                                    ? "bg-red-50 hover:bg-red-100"
+                                                    : "bg-green-50 hover:bg-green-100"
                                             }`}
                                         >
                                             <div className="flex items-center gap-3">
                                                 {failed ? (
-                                                    <Cross1Icon className="w-5 h-5 text-red-600" />
+                                                    <Cross1Icon className="w-5 h-5" />
                                                 ) : (
-                                                    <CheckIcon className="w-5 h-5 text-green-600" />
+                                                    <CheckIcon className="w-5 h-5" />
                                                 )}
                                                 <div className="text-left">
                                                     <div className="font-medium capitalize">
                                                         {workout.lift}
                                                     </div>
-                                                    <div className="text-sm text-gray-600">
+                                                    <div className="text-sm opacity-90">
                                                         {date.toLocaleDateString()}
                                                     </div>
                                                 </div>
                                             </div>
                                             {workout.duration > 0 && (
-                                                <div className="text-sm text-gray-600">
+                                                <div className="text-sm">
                                                     {formatTime(
                                                         workout.duration,
                                                     )}
                                                 </div>
                                             )}
-                                        </button>
+                                        </Button>
                                     );
                                 })}
                             </div>
@@ -301,9 +295,10 @@ export default function Home() {
             </main>
 
             <div className="fixed bottom-4 right-4 flex gap-2">
-                <button
+                <Button
+                    variant="secondary"
+                    size="icon"
                     onClick={handleImport}
-                    className="p-3 bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-800 transition-colors"
                     title="Import Data"
                 >
                     <svg
@@ -320,10 +315,11 @@ export default function Home() {
                             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
                         />
                     </svg>
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant="secondary"
+                    size="icon"
                     onClick={handleExport}
-                    className="p-3 bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-800 transition-colors"
                     title="Export Data"
                 >
                     <svg
@@ -340,10 +336,10 @@ export default function Home() {
                             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                         />
                     </svg>
-                </button>
+                </Button>
             </div>
 
-            <footer className="text-center py-4 text-gray-500">
+            <footer className="text-center py-4 text-secondary-foreground">
                 <p className="text-sm">Built for lifters, by lifters</p>
             </footer>
         </div>

@@ -1,12 +1,13 @@
 "use client";
 
 import { WorkoutDisplay } from "@/components/WorkoutDisplay";
+import { use } from "react";
 
 export default function HistoricalWorkoutPage({
     params,
 }: {
-    params: { date: string };
+    params: Promise<{ date: string }>;
 }) {
-    console.log(params.date);
-    return <WorkoutDisplay date={params.date} />;
+    const date = use(params).date;
+    return <WorkoutDisplay date={date} />;
 }
