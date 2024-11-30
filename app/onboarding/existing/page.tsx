@@ -7,13 +7,11 @@ import { setCurrentWeek, setMaxes, setCurrentLift } from "@/store/workoutSlice";
 import { type Maxes, type Lift, liftOrder } from "@/types/workout";
 import { useAppSelector } from "@/hooks/redux";
 import { WeightDisplay } from "@/components/WeightDisplay";
-import { lbsToKg, kgToLbs } from "@/lib/weight";
 import { Button } from "@/components/ui/button";
 import { LiftCard } from "@/components/LiftCard";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WeightInput } from "@/components/ui/WeightInput";
 
@@ -24,19 +22,9 @@ export default function ExistingUserOnboarding() {
     const maxes = useAppSelector((state) => state.workout.maxes);
     const currentWeek = useAppSelector((state) => state.workout.currentWeek);
     const currentLift = useAppSelector((state) => state.workout.currentLift);
-    const weightUnit = useAppSelector((state) => state.workout.weightUnit);
     const weightsInitialized = Object.values(maxes).every(
         (weight) => weight > 0,
     );
-
-    const handleMaxesChange =
-        (lift: keyof Maxes) => (e: React.ChangeEvent<HTMLInputElement>) => {
-            const inputValue = Number(e.target.value);
-            const valueInLbs =
-                weightUnit === "kg" ? kgToLbs(inputValue) : inputValue;
-            const value = maxType === "actual" ? valueInLbs * 0.9 : valueInLbs;
-            dispatch(setMaxes({ ...maxes, [lift]: value }));
-        };
 
     const isValid = Object.values(maxes).every((v) => v > 0);
 

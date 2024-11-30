@@ -152,8 +152,8 @@ export default function Home() {
                                                             Bro, slow down 🥵
                                                         </p>
                                                         <p className="text-sm">
-                                                            It's been 7+ days
-                                                            straight!
+                                                            It&apos;s been 7+
+                                                            days straight!
                                                         </p>
                                                     </>
                                                 ) : (
@@ -163,7 +163,7 @@ export default function Home() {
                                                             rest day
                                                         </p>
                                                         <p className="text-sm">
-                                                            You've trained{" "}
+                                                            You&apos;ve trained{" "}
                                                             {
                                                                 consecutiveWorkoutDays
                                                             }{" "}

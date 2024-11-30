@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setMaxes } from "@/store/workoutSlice";
-import { type Maxes, liftOrder } from "@/types/workout";
+import { liftOrder } from "@/types/workout";
 import { LiftCard } from "@/components/LiftCard";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/layout/PageContainer";
