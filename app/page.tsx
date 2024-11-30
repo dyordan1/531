@@ -147,13 +147,13 @@ export default function Home() {
                         <>
                             <Button
                                 onClick={() => router.push("/onboarding/new")}
-                                className="w-full h-auto py-6 flex flex-col items-center"
+                                className="w-full h-auto py-6 flex flex-col items-center whitespace-normal"
                                 size="lg"
                             >
-                                <h2 className="text-xl font-semibold">
+                                <h2 className="text-xl sm:text-3xl font-semibold">
                                     I&apos;m New to 5/3/1
                                 </h2>
-                                <p className="mt-2 text-sm opacity-90">
+                                <p className="mt-2 text-sm sm:text-base opacity-90">
                                     Get started with a guided setup and learn
                                     the program basics
                                 </p>
@@ -163,14 +163,14 @@ export default function Home() {
                                 onClick={() =>
                                     router.push("/onboarding/existing")
                                 }
-                                className="w-full h-auto py-6 flex flex-col items-center"
+                                className="w-full h-auto py-6 flex flex-col items-center whitespace-normal"
                                 size="lg"
                                 variant="secondary"
                             >
-                                <h2 className="text-xl font-semibold">
+                                <h2 className="text-xl sm:text-3xl font-semibold">
                                     I Know My Numbers
                                 </h2>
-                                <p className="mt-2 text-sm opacity-90">
+                                <p className="mt-2 text-sm sm:text-base opacity-90">
                                     Jump right in with your existing training
                                     maxes
                                 </p>
@@ -220,8 +220,7 @@ export default function Home() {
                                             );
                                         },
                                     }}
-                                    onSelect={(date) => {
-                                        if (!date) return;
+                                    onDayClick={(date) => {
                                         const dateKey = date
                                             .toISOString()
                                             .slice(0, 10)

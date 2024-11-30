@@ -27,6 +27,7 @@ interface WorkoutHistoryEntry {
 }
 
 interface WorkoutState {
+    version: string;
     maxes: Maxes;
     shouldIncrease: Record<Lift, boolean>;
     weightUnit: "lbs" | "kg";
@@ -42,6 +43,7 @@ interface WorkoutState {
 }
 
 const initialState: WorkoutState = {
+    version: "0.9",
     maxes: {
         squat: 0,
         bench: 0,
