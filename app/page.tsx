@@ -9,6 +9,7 @@ import { liftOrder } from "@/types/workout";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { LiftCard } from "@/components/LiftCard";
+import { useMemo } from "react";
 
 export default function Home() {
     const router = useRouter();
@@ -83,6 +84,22 @@ export default function Home() {
         );
     };
 
+    const consecutiveWorkoutDays = useMemo(() => {
+        let consecutiveDays = 0;
+
+        for (let i = 1; i <= 7; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateKey = date.toISOString().slice(0, 10).replace(/-/g, "");
+            if (workoutHistory[dateKey]) {
+                consecutiveDays++;
+            } else {
+                break;
+            }
+        }
+        return consecutiveDays;
+    }, [workoutHistory]);
+
     return (
         <div className="grid grid-rows-[auto_1fr_auto] min-h-screen p-8 relative">
             <header className="text-center py-8">
@@ -125,13 +142,60 @@ export default function Home() {
                                     )}
                                 </div>
                             ) : (
-                                <Button
-                                    onClick={() => router.push("/workout")}
-                                    className="w-full"
-                                    size="lg"
-                                >
-                                    Start Workout
-                                </Button>
+                                <>
+                                    {consecutiveWorkoutDays >= 2 ? (
+                                        <div className="space-y-2">
+                                            <div className="w-full p-4 bg-red-100 text-red-800 rounded-lg text-center">
+                                                {consecutiveWorkoutDays >= 7 ? (
+                                                    <>
+                                                        <p className="font-semibold">
+                                                            Bro, slow down 🥵
+                                                        </p>
+                                                        <p className="text-sm">
+                                                            It's been 7+ days
+                                                            straight!
+                                                        </p>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <p className="font-semibold">
+                                                            Consider taking a
+                                                            rest day
+                                                        </p>
+                                                        <p className="text-sm">
+                                                            You've trained{" "}
+                                                            {
+                                                                consecutiveWorkoutDays
+                                                            }{" "}
+                                                            days in a row
+                                                        </p>
+                                                    </>
+                                                )}
+                                            </div>
+                                            <Button
+                                                onClick={() =>
+                                                    router.push("/workout")
+                                                }
+                                                className="w-full bg-red-500 hover:bg-red-600 whitespace-normal"
+                                                size="lg"
+                                            >
+                                                {consecutiveWorkoutDays >= 7
+                                                    ? "Yeah, Whatever. Lift. Trucks."
+                                                    : "Start Workout Anyway"}
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <Button
+                                            onClick={() =>
+                                                router.push("/workout")
+                                            }
+                                            className="w-full"
+                                            size="lg"
+                                        >
+                                            Start Workout
+                                        </Button>
+                                    )}
+                                </>
                             )}
                             <Button
                                 onClick={() =>
