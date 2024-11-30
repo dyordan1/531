@@ -10,26 +10,19 @@ import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { WeightInput } from "@/components/ui/WeightInput";
 import { useAppSelector } from "@/hooks/redux";
-import { kgToLbs, lbsToKg } from "@/lib/weight";
+import { Label } from "@/components/ui/label";
 
 export default function NewUserOnboarding() {
     const [step, setStep] = useState<"intro" | "maxes" | "confirm">("intro");
-    const [maxes, setLocalMaxes] = useState<Maxes>({
-        squat: 0,
-        bench: 0,
-        deadlift: 0,
-        press: 0,
-    });
+    const maxes = useAppSelector((state) => state.workout.maxes);
     const weightUnit = useAppSelector((state) => state.workout.weightUnit);
 
     const router = useRouter();
     const dispatch = useDispatch();
 
     const handleComplete = () => {
-        dispatch(setMaxes(maxes));
         router.push("/");
     };
 
@@ -95,26 +88,17 @@ export default function NewUserOnboarding() {
                                 <Label htmlFor={lift} className="capitalize">
                                     {lift} ({weightUnit})
                                 </Label>
-                                <Input
+                                <WeightInput
                                     id={lift}
-                                    type="number"
-                                    value={
-                                        weightUnit === "kg"
-                                            ? Math.round(lbsToKg(maxes[lift]))
-                                            : maxes[lift]
-                                    }
-                                    onChange={(e) => {
-                                        let value = Number(e.target.value);
-                                        if (weightUnit === "kg") {
-                                            value = kgToLbs(value);
-                                        }
-                                        setLocalMaxes((prev) => ({
-                                            ...prev,
-                                            [lift]: value,
-                                        }));
+                                    value={maxes[lift]}
+                                    onChange={(value) => {
+                                        dispatch(
+                                            setMaxes({
+                                                ...maxes,
+                                                [lift]: value,
+                                            }),
+                                        );
                                     }}
-                                    placeholder="Enter weight"
-                                    min="0"
                                 />
                             </div>
                         ))}

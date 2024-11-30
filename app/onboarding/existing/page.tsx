@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { WeightInput } from "@/components/ui/WeightInput";
 
 export default function ExistingUserOnboarding() {
     const router = useRouter();
@@ -97,31 +98,21 @@ export default function ExistingUserOnboarding() {
                         <Label className="text-primary capitalize">
                             {lift} {maxType === "actual" ? "1RM" : "TM"}
                         </Label>
-                        <div className="relative mt-2">
-                            <Input
-                                type="number"
-                                value={(() => {
-                                    const baseValue =
-                                        maxType === "actual"
-                                            ? maxes[lift] / 0.9
-                                            : maxes[lift];
-                                    const raw =
-                                        weightUnit === "kg"
-                                            ? lbsToKg(Number(baseValue))
-                                            : baseValue;
-                                    return Math.round(raw);
-                                })()}
-                                onChange={handleMaxesChange(
-                                    lift as keyof Maxes,
-                                )}
-                                className="pr-12"
-                                placeholder="Enter weight"
-                                min="0"
-                            />
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-4 text-muted-foreground">
-                                {weightUnit}
-                            </div>
-                        </div>
+                        <WeightInput
+                            value={
+                                maxType === "actual"
+                                    ? maxes[lift] / 0.9
+                                    : maxes[lift]
+                            }
+                            onChange={(value) => {
+                                const finalValue =
+                                    maxType === "actual" ? value * 0.9 : value;
+                                dispatch(
+                                    setMaxes({ ...maxes, [lift]: finalValue }),
+                                );
+                            }}
+                            className="pr-12"
+                        />
                         {maxType === "actual" && maxes[lift] > 0 && (
                             <p className="text-sm text-muted-foreground mt-2">
                                 Training Max:{" "}
