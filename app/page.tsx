@@ -7,6 +7,8 @@ import { setAllState } from "@/store/workoutSlice";
 import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { formatTime } from "@/components/WorkoutTimer";
 import { liftOrder } from "@/types/workout";
+import { Calendar } from "@/components/ui/calendar";
+import { isSameDay } from "date-fns";
 
 export default function Home() {
     const router = useRouter();
@@ -61,6 +63,24 @@ export default function Home() {
     const getTodayWorkout = () => {
         const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
         return workoutHistory[today];
+    };
+
+    const getWorkoutStatus = (date: Date) => {
+        const dateKey = date.toISOString().slice(0, 10).replace(/-/g, "");
+        const workout = workoutHistory[dateKey];
+        if (!workout) return null;
+        return workout.mainSets.failed.length > 0 ? "failed" : "success";
+    };
+
+    const getMostRecentWorkoutDate = () => {
+        if (workoutDays.length === 0) return new Date();
+
+        const mostRecent = workoutDays[0];
+        return new Date(
+            parseInt(mostRecent.slice(0, 4)),
+            parseInt(mostRecent.slice(4, 6)) - 1,
+            parseInt(mostRecent.slice(6, 8)),
+        );
     };
 
     return (
@@ -171,14 +191,71 @@ export default function Home() {
                     )}
 
                     {weightsInitialized && workoutDays.length > 0 && (
-                        <div className="space-y-4">
+                        <div className="space-y-4 w-full">
                             <h2 className="text-2xl font-semibold text-gray-800">
-                                Recent Workouts
+                                Workout History
                             </h2>
-                            <div className="space-y-2">
+
+                            {/* Calendar for screens >= 480px */}
+                            <div className="hidden min-[480px]:block rounded-md border w-full">
+                                <Calendar
+                                    mode="single"
+                                    selected={new Date()}
+                                    defaultMonth={getMostRecentWorkoutDate()}
+                                    modifiers={{
+                                        workout: (date) =>
+                                            getWorkoutStatus(date) !== null,
+                                    }}
+                                    modifiersStyles={{
+                                        workout: {
+                                            fontWeight: "bold",
+                                        },
+                                    }}
+                                    className="w-full"
+                                    components={{
+                                        DayContent: ({ date }) => {
+                                            const status =
+                                                getWorkoutStatus(date);
+                                            return (
+                                                <div
+                                                    className={`w-full h-full flex items-center justify-center ${
+                                                        status === "failed"
+                                                            ? "bg-red-100 text-red-900"
+                                                            : status ===
+                                                                "success"
+                                                              ? "bg-green-100 text-green-900"
+                                                              : ""
+                                                    }`}
+                                                >
+                                                    {date.getDate()}
+                                                </div>
+                                            );
+                                        },
+                                    }}
+                                    onSelect={(date) => {
+                                        if (!date) return;
+                                        const dateKey = date
+                                            .toISOString()
+                                            .slice(0, 10)
+                                            .replace(/-/g, "");
+                                        if (workoutHistory[dateKey]) {
+                                            router.push(`/workout/${dateKey}`);
+                                        }
+                                    }}
+                                />
+                            </div>
+
+                            {/* List for screens < 480px */}
+                            <div className="min-[480px]:hidden space-y-2">
                                 {workoutDays.map((day) => {
                                     const workout = workoutHistory[day];
-                                    const mainSets = workout.mainSets;
+                                    const date = new Date(
+                                        parseInt(day.slice(0, 4)),
+                                        parseInt(day.slice(4, 6)) - 1,
+                                        parseInt(day.slice(6, 8)),
+                                    );
+                                    const failed =
+                                        workout.mainSets.failed.length > 0;
 
                                     return (
                                         <button
@@ -186,62 +263,34 @@ export default function Home() {
                                             onClick={() =>
                                                 router.push(`/workout/${day}`)
                                             }
-                                            className="w-full p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow text-left"
+                                            className={`w-full p-4 rounded-lg shadow-sm flex items-center justify-between ${
+                                                failed
+                                                    ? "bg-red-50"
+                                                    : "bg-green-50"
+                                            }`}
                                         >
-                                            <div className="flex justify-between items-center">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex gap-1">
-                                                        {[0, 1, 2].map(
-                                                            (index) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className={`w-6 h-6 flex items-center justify-center rounded-md ${
-                                                                        mainSets.failed.includes(
-                                                                            index,
-                                                                        )
-                                                                            ? "bg-red-200 text-red-800"
-                                                                            : mainSets.completed.includes(
-                                                                                    index,
-                                                                                )
-                                                                              ? "bg-green-200 text-green-800"
-                                                                              : "bg-gray-200 text-gray-400"
-                                                                    }`}
-                                                                >
-                                                                    {mainSets.failed.includes(
-                                                                        index,
-                                                                    ) ? (
-                                                                        <Cross1Icon className="w-4 h-4" />
-                                                                    ) : (
-                                                                        <CheckIcon className="w-4 h-4" />
-                                                                    )}
-                                                                </div>
-                                                            ),
-                                                        )}
+                                            <div className="flex items-center gap-3">
+                                                {failed ? (
+                                                    <Cross1Icon className="w-5 h-5 text-red-600" />
+                                                ) : (
+                                                    <CheckIcon className="w-5 h-5 text-green-600" />
+                                                )}
+                                                <div className="text-left">
+                                                    <div className="font-medium capitalize">
+                                                        {workout.lift}
                                                     </div>
-                                                    <div>
-                                                        <h3 className="font-medium capitalize">
-                                                            {workout.lift}
-                                                        </h3>
-                                                        <p className="text-sm text-gray-600">
-                                                            {new Date(
-                                                                workout.date,
-                                                            ).toLocaleDateString()}
-                                                        </p>
+                                                    <div className="text-sm text-gray-600">
+                                                        {date.toLocaleDateString()}
                                                     </div>
                                                 </div>
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-5 w-5 text-gray-400"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
                                             </div>
+                                            {workout.duration > 0 && (
+                                                <div className="text-sm text-gray-600">
+                                                    {formatTime(
+                                                        workout.duration,
+                                                    )}
+                                                </div>
+                                            )}
                                         </button>
                                     );
                                 })}
