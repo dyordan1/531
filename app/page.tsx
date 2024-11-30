@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { WeightDisplay } from "@/components/WeightDisplay";
 import { setAllState } from "@/store/workoutSlice";
 import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { formatTime } from "@/components/WorkoutTimer";
@@ -113,7 +112,7 @@ export default function Home() {
                             {getTodayWorkout() ? (
                                 <div className="w-full p-4 bg-green-500 text-primary rounded-lg shadow-md text-center">
                                     <p className="text-xl font-bold">
-                                        🎉 Today's Workout Complete! 🎉
+                                        🎉 Today&apos;s Workout Complete! 🎉
                                     </p>
                                     {getTodayWorkout().duration > 0 && (
                                         <p className="text-sm mt-1">

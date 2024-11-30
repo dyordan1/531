@@ -1,27 +1,19 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { formatTime, WorkoutTimer } from "@/components/WorkoutTimer";
+import { WorkoutTimer } from "@/components/WorkoutTimer";
 import { WorkoutSets } from "@/components/WorkoutSets";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import {
-    togglePreferredAssistance,
-    recordWorkout,
-    setCurrentWeek,
-    setCurrentLift,
-} from "@/store/workoutSlice";
+import { togglePreferredAssistance, recordWorkout } from "@/store/workoutSlice";
 import { getWorkoutSets } from "@/lib/workout";
-import { CheckIcon } from "@radix-ui/react-icons";
-import { Lift } from "@/types/workout";
 import { WorkoutDisplay } from "@/components/WorkoutDisplay";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
+import { CheckIcon } from "@radix-ui/react-icons";
 
 function getAssistanceWork(lift: string): string[] {
     switch (lift) {
@@ -86,7 +78,6 @@ function getAssistanceWork(lift: string): string[] {
 }
 
 export default function WorkoutPage() {
-    const router = useRouter();
     const dispatch = useAppDispatch();
     const [showAllAssistance, setShowAllAssistance] = useState(false);
     const currentWeek = useAppSelector((state) => state.workout.currentWeek);
@@ -237,21 +228,47 @@ export default function WorkoutPage() {
                                 : "See All Options"}
                         </Button>
                         {displayedAssistance.map((exercise) => (
-                            <Button
+                            <div
                                 key={exercise}
-                                variant="outline"
-                                className={cn(
-                                    "justify-between",
-                                    preferredAssistance.includes(exercise) &&
-                                        "border-primary",
-                                )}
-                                onClick={() => handleAssistanceToggle(exercise)}
+                                className="flex items-center gap-2"
                             >
-                                <span>{exercise}</span>
-                                {preferredAssistance.includes(exercise) && (
-                                    <Badge variant="secondary">Preferred</Badge>
-                                )}
-                            </Button>
+                                <Button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        toggleAssistanceCompletion(exercise);
+                                    }}
+                                    variant={
+                                        completedAssistance.includes(exercise)
+                                            ? "default"
+                                            : "secondary"
+                                    }
+                                    size="icon"
+                                >
+                                    <CheckIcon className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className={cn(
+                                        "grow justify-between",
+                                        preferredAssistance.includes(
+                                            exercise,
+                                        ) && "border-primary",
+                                        completedAssistance.includes(
+                                            exercise,
+                                        ) && "border-green-500",
+                                    )}
+                                    onClick={() =>
+                                        handleAssistanceToggle(exercise)
+                                    }
+                                >
+                                    <span>{exercise}</span>
+                                    {preferredAssistance.includes(exercise) && (
+                                        <Badge variant="secondary">
+                                            Preferred
+                                        </Badge>
+                                    )}
+                                </Button>
+                            </div>
                         ))}
                         <p className="text-sm text-muted-foreground col-span-2 mt-4">
                             {showAllAssistance

@@ -69,7 +69,7 @@ export default function NewUserOnboarding() {
                         size="lg"
                         onClick={() => setStep("maxes")}
                     >
-                        Let's Get Started
+                        Let&apos;s Get Started
                     </Button>
                     <p className="text-sm text-secondary-foreground mt-2">
                         * The app will help you track your training days.

@@ -1,20 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/hooks/redux";
 import { WorkoutTimer } from "@/components/WorkoutTimer";
 import { WorkoutSets } from "@/components/WorkoutSets";
 import { getWorkoutSets } from "@/lib/workout";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export function WorkoutDisplay({ date }: { date: string }) {
-    const router = useRouter();
     const workout = useAppSelector((state) => state.workout.history[date]);
 
     if (!workout) {

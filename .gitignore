@@ -37,3 +37,7 @@ next-env.d.ts
 
 # direnv
 .direnv
+
+# Certificates
+certificates
+nginx/certs
