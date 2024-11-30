@@ -7,3 +7,5 @@ If you like this, feel free to [<img src="https://cdn.buymeacoffee.com/buttons/v
 ## Dev
 
 This project is setup with direnv + a nix flake that will fetch everything you need. You don't have to use it, but install [Nix](https://nixos.org/download/) and setup [direnv](https://direnv.net/) if you'd like to.
+
+An example app state is in `example.json`, import it in the app to have some more data to play around with than you can easily generate with usage.
