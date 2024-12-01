@@ -29,7 +29,9 @@ export function LiftCard({ lift, weight, isActive = false }: LiftCardProps) {
                     playsInline
                     className={cn(
                         "w-full h-full object-cover",
-                        isActive ? "opacity-25" : "opacity-10",
+                        isActive
+                            ? "dark:opacity-45 opacity-25"
+                            : "dark:opacity-20 opacity-10",
                     )}
                 >
                     <source src={`/${lift}.mp4`} type="video/mp4" />

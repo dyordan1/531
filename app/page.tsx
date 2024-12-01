@@ -313,13 +313,11 @@ export default function Home() {
                                         onClick={() =>
                                             router.push(`/workout/${day}`)
                                         }
-                                        variant={
-                                            failed ? "destructive" : "secondary"
-                                        }
+                                        variant="secondary"
                                         className={`w-full justify-between h-auto py-3 ${
                                             failed
-                                                ? "bg-red-50 hover:bg-red-100"
-                                                : "bg-green-50 hover:bg-green-100"
+                                                ? "bg-red-50 dark:bg-red-500 hover:bg-red-100 dark:hover:bg-red-600"
+                                                : "bg-green-50 dark:bg-green-500 hover:bg-green-100 dark:hover:bg-green-600"
                                         }`}
                                     >
                                         <div className="flex items-center gap-3">
