@@ -127,6 +127,7 @@ export default function Home() {
                                     />
                                 ))}
                             </div>
+
                             {getTodayWorkout() ? (
                                 <div className="w-full p-4 bg-green-500 text-primary rounded-lg shadow-md text-center">
                                     <p className="text-xl font-bold">
@@ -207,6 +208,17 @@ export default function Home() {
                             >
                                 Edit Program
                             </Button>
+
+                            <LiftCard
+                                key="total"
+                                lift="total"
+                                weight={
+                                    (trainingMaxes.squat +
+                                        trainingMaxes.bench +
+                                        trainingMaxes.deadlift) /
+                                    0.9
+                                }
+                            />
                         </div>
                     ) : (
                         <>

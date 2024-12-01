@@ -10,6 +10,15 @@ interface LiftCardProps {
 }
 
 export function LiftCard({ lift, weight, isActive = false }: LiftCardProps) {
+    let title = lift;
+
+    if (lift === "total") {
+        title = "Est. Powerlifting Total";
+    }
+    if (lift === "press") {
+        title = "Overhead Press";
+    }
+
     return (
         <Card className={cn("relative", isActive && "border-primary")}>
             <div className="absolute inset-0 overflow-hidden rounded-xl">
@@ -35,9 +44,7 @@ export function LiftCard({ lift, weight, isActive = false }: LiftCardProps) {
                 </Badge>
             )}
             <CardHeader className="relative z-10">
-                <CardTitle className="capitalize">
-                    {lift === "press" ? "Overhead Press" : lift}
-                </CardTitle>
+                <CardTitle className="capitalize">{title}</CardTitle>
             </CardHeader>
             <CardContent className="relative z-10">
                 <WeightDisplay
