@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { WeightUnitToggle } from "@/components/WeightUnitToggle";
+import { Footer } from "@/components/Footer";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -28,11 +29,12 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased pb-8 sm:pb-0`}
+                className={`${geistSans.variable} ${geistMono.variable} antialiased pb-12 md:pb-0`}
             >
                 <Providers>
                     {children}
                     <WeightUnitToggle />
+                    <Footer />
                 </Providers>
             </body>
         </html>

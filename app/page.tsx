@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { LiftCard } from "@/components/LiftCard";
 import { useMemo } from "react";
 import { getLocalDateKey } from "@/lib/dates";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Section } from "@/components/layout/Section";
 
 export default function Home() {
     const router = useRouter();
@@ -102,22 +105,19 @@ export default function Home() {
     }, [workoutHistory]);
 
     return (
-        <div className="grid grid-rows-[auto_1fr_auto] min-h-screen p-8 relative">
-            <header className="text-center py-8">
-                <h1 className="text-4xl font-bold">5/3/1 Workout Tracker</h1>
-                <p className="mt-2 text-secondary-foreground">
-                    Simplifying your strength journey
-                </p>
-            </header>
+        <PageContainer>
+            <PageHeader
+                title="5/3/1 Workout Tracker"
+                description="Simplifying your strength journey"
+            />
 
-            <main className="flex flex-col gap-8 items-center justify-center">
-                <div className="max-w-md w-full space-y-6">
-                    {weightsInitialized ? (
-                        <div className="space-y-4">
-                            <h2 className="text-2xl font-semibold text-primary">
-                                Your Program - {weekDisplay}
-                            </h2>
-
+            <main className="space-y-8">
+                {weightsInitialized ? (
+                    <>
+                        <Section
+                            title={`Your Program - ${weekDisplay}`}
+                            variant="plain"
+                        >
                             <div className="grid sm:grid-cols-2 gap-4">
                                 {liftOrder.map((lift) => (
                                     <LiftCard
@@ -220,150 +220,137 @@ export default function Home() {
                                     0.9
                                 }
                             />
-                        </div>
-                    ) : (
-                        <>
-                            <Button
-                                onClick={() => router.push("/onboarding/new")}
-                                className="w-full h-auto py-6 flex flex-col items-center whitespace-normal"
-                                size="lg"
-                            >
-                                <h2 className="text-xl sm:text-3xl font-semibold">
-                                    I&apos;m New to 5/3/1
-                                </h2>
-                                <p className="mt-2 text-sm sm:text-base opacity-90">
-                                    Get started with a guided setup and learn
-                                    the program basics
-                                </p>
-                            </Button>
-
-                            <Button
-                                onClick={() =>
-                                    router.push("/onboarding/existing")
-                                }
-                                className="w-full h-auto py-6 flex flex-col items-center whitespace-normal"
-                                size="lg"
-                                variant="secondary"
-                            >
-                                <h2 className="text-xl sm:text-3xl font-semibold">
-                                    I Know My Numbers
-                                </h2>
-                                <p className="mt-2 text-sm sm:text-base opacity-90">
-                                    Jump right in with your existing training
-                                    maxes
-                                </p>
-                            </Button>
-                        </>
-                    )}
-
-                    {weightsInitialized && workoutDays.length > 0 && (
-                        <div className="space-y-4 w-full">
-                            <h2 className="text-2xl font-semibold text-primary">
-                                Workout History
+                        </Section>
+                    </>
+                ) : (
+                    <Section variant="plain">
+                        <Button
+                            onClick={() => router.push("/onboarding/new")}
+                            className="w-full h-auto py-6 flex flex-col items-center whitespace-normal"
+                            size="lg"
+                        >
+                            <h2 className="text-xl sm:text-3xl font-semibold">
+                                I&apos;m New to 5/3/1
                             </h2>
+                            <p className="mt-2 text-sm sm:text-base opacity-90">
+                                Get started with a guided setup and learn the
+                                program basics
+                            </p>
+                        </Button>
 
-                            {/* Calendar for screens >= 480px */}
-                            <div className="hidden min-[480px]:block rounded-md border w-full">
-                                <Calendar
-                                    mode="single"
-                                    selected={new Date()}
-                                    defaultMonth={getMostRecentWorkoutDate()}
-                                    modifiers={{
-                                        workout: (date) =>
-                                            getWorkoutStatus(date) !== null,
-                                    }}
-                                    modifiersStyles={{
-                                        workout: {
-                                            fontWeight: "bold",
-                                        },
-                                    }}
-                                    className="w-full"
-                                    components={{
-                                        DayContent: ({ date }) => {
-                                            const status =
-                                                getWorkoutStatus(date);
-                                            return (
-                                                <div
-                                                    className={`w-full h-full flex items-center justify-center ${
-                                                        status === "failed"
-                                                            ? "bg-red-100 text-red-900"
-                                                            : status ===
-                                                                "success"
-                                                              ? "bg-green-100 text-green-900"
-                                                              : ""
-                                                    }`}
-                                                >
-                                                    {date.getDate()}
-                                                </div>
-                                            );
-                                        },
-                                    }}
-                                    onDayClick={(date) => {
-                                        const dateKey = getLocalDateKey(date);
-                                        if (workoutHistory[dateKey]) {
-                                            router.push(`/workout/${dateKey}`);
+                        <Button
+                            onClick={() => router.push("/onboarding/existing")}
+                            className="w-full h-auto py-6 flex flex-col items-center whitespace-normal"
+                            size="lg"
+                            variant="secondary"
+                        >
+                            <h2 className="text-xl sm:text-3xl font-semibold">
+                                I Know My Numbers
+                            </h2>
+                            <p className="mt-2 text-sm sm:text-base opacity-90">
+                                Jump right in with your existing training maxes
+                            </p>
+                        </Button>
+                    </Section>
+                )}
+
+                {weightsInitialized && workoutDays.length > 0 && (
+                    <Section title="Workout History" variant="plain">
+                        {/* Calendar for screens >= 480px */}
+                        <div className="hidden min-[480px]:block rounded-md border w-full">
+                            <Calendar
+                                mode="single"
+                                selected={new Date()}
+                                defaultMonth={getMostRecentWorkoutDate()}
+                                modifiers={{
+                                    workout: (date) =>
+                                        getWorkoutStatus(date) !== null,
+                                }}
+                                modifiersStyles={{
+                                    workout: {
+                                        fontWeight: "bold",
+                                    },
+                                }}
+                                className="w-full"
+                                components={{
+                                    DayContent: ({ date }) => {
+                                        const status = getWorkoutStatus(date);
+                                        return (
+                                            <div
+                                                className={`w-full h-full flex items-center justify-center ${
+                                                    status === "failed"
+                                                        ? "bg-red-100 text-red-900"
+                                                        : status === "success"
+                                                          ? "bg-green-100 text-green-900"
+                                                          : ""
+                                                }`}
+                                            >
+                                                {date.getDate()}
+                                            </div>
+                                        );
+                                    },
+                                }}
+                                onDayClick={(date) => {
+                                    const dateKey = getLocalDateKey(date);
+                                    if (workoutHistory[dateKey]) {
+                                        router.push(`/workout/${dateKey}`);
+                                    }
+                                }}
+                            />
+                        </div>
+
+                        {/* List for screens < 480px */}
+                        <div className="min-[480px]:hidden space-y-2">
+                            {workoutDays.map((day) => {
+                                const workout = workoutHistory[day];
+                                const date = new Date(workout.date);
+                                const failed =
+                                    workout.mainSets.failed.length > 0;
+
+                                return (
+                                    <Button
+                                        key={day}
+                                        onClick={() =>
+                                            router.push(`/workout/${day}`)
                                         }
-                                    }}
-                                />
-                            </div>
-
-                            {/* List for screens < 480px */}
-                            <div className="min-[480px]:hidden space-y-2">
-                                {workoutDays.map((day) => {
-                                    const workout = workoutHistory[day];
-                                    const date = new Date(workout.date);
-                                    const failed =
-                                        workout.mainSets.failed.length > 0;
-
-                                    return (
-                                        <Button
-                                            key={day}
-                                            onClick={() =>
-                                                router.push(`/workout/${day}`)
-                                            }
-                                            variant={
-                                                failed
-                                                    ? "destructive"
-                                                    : "secondary"
-                                            }
-                                            className={`w-full justify-between h-auto py-3 ${
-                                                failed
-                                                    ? "bg-red-50 hover:bg-red-100"
-                                                    : "bg-green-50 hover:bg-green-100"
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                {failed ? (
-                                                    <Cross1Icon className="w-5 h-5" />
-                                                ) : (
-                                                    <CheckIcon className="w-5 h-5" />
-                                                )}
-                                                <div className="text-left">
-                                                    <div className="font-medium capitalize">
-                                                        {workout.lift}
-                                                    </div>
-                                                    <div className="text-sm opacity-90">
-                                                        {date.toLocaleDateString()}
-                                                    </div>
+                                        variant={
+                                            failed ? "destructive" : "secondary"
+                                        }
+                                        className={`w-full justify-between h-auto py-3 ${
+                                            failed
+                                                ? "bg-red-50 hover:bg-red-100"
+                                                : "bg-green-50 hover:bg-green-100"
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            {failed ? (
+                                                <Cross1Icon className="w-5 h-5" />
+                                            ) : (
+                                                <CheckIcon className="w-5 h-5" />
+                                            )}
+                                            <div className="text-left">
+                                                <div className="font-medium capitalize">
+                                                    {workout.lift}
+                                                </div>
+                                                <div className="text-sm opacity-90">
+                                                    {date.toLocaleDateString()}
                                                 </div>
                                             </div>
-                                            {workout.duration > 0 && (
-                                                <div className="text-sm">
-                                                    {formatTime(
-                                                        workout.duration,
-                                                    )}
-                                                </div>
-                                            )}
-                                        </Button>
-                                    );
-                                })}
-                            </div>
+                                        </div>
+                                        {workout.duration > 0 && (
+                                            <div className="text-sm">
+                                                {formatTime(workout.duration)}
+                                            </div>
+                                        )}
+                                    </Button>
+                                );
+                            })}
                         </div>
-                    )}
-                </div>
+                    </Section>
+                )}
             </main>
 
-            <div className="fixed bottom-4 right-4 flex gap-2">
+            <div className="fixed bottom-4 right-4 flex gap-2 z-50">
                 <Button
                     variant="secondary"
                     size="icon"
@@ -411,6 +398,6 @@ export default function Home() {
             <footer className="text-center py-4 text-secondary-foreground">
                 <p className="text-sm">Built for lifters, by lifters</p>
             </footer>
-        </div>
+        </PageContainer>
     );
 }

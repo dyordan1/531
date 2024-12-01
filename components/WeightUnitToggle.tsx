@@ -10,7 +10,7 @@ export function WeightUnitToggle() {
     const weightUnit = useAppSelector((state) => state.workout.weightUnit);
 
     return (
-        <Card className="fixed bottom-4 left-4">
+        <Card className="fixed bottom-4 left-4 z-50">
             <CardContent className="p-2">
                 <div className="flex space-x-1">
                     <Button
