@@ -10,6 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { LiftCard } from "@/components/LiftCard";
 import { useMemo } from "react";
+import { getLocalDateKey } from "@/lib/dates";
 
 export default function Home() {
     const router = useRouter();
@@ -62,12 +63,12 @@ export default function Home() {
     };
 
     const getTodayWorkout = () => {
-        const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-        return workoutHistory[today];
+        const dateKey = getLocalDateKey();
+        return workoutHistory[dateKey];
     };
 
     const getWorkoutStatus = (date: Date) => {
-        const dateKey = date.toISOString().slice(0, 10).replace(/-/g, "");
+        const dateKey = getLocalDateKey(date);
         const workout = workoutHistory[dateKey];
         if (!workout) return null;
         return workout.mainSets.failed.length > 0 ? "failed" : "success";
@@ -298,10 +299,7 @@ export default function Home() {
                                         },
                                     }}
                                     onDayClick={(date) => {
-                                        const dateKey = date
-                                            .toISOString()
-                                            .slice(0, 10)
-                                            .replace(/-/g, "");
+                                        const dateKey = getLocalDateKey(date);
                                         if (workoutHistory[dateKey]) {
                                             router.push(`/workout/${dateKey}`);
                                         }
@@ -313,11 +311,7 @@ export default function Home() {
                             <div className="min-[480px]:hidden space-y-2">
                                 {workoutDays.map((day) => {
                                     const workout = workoutHistory[day];
-                                    const date = new Date(
-                                        parseInt(day.slice(0, 4)),
-                                        parseInt(day.slice(4, 6)) - 1,
-                                        parseInt(day.slice(6, 8)),
-                                    );
+                                    const date = new Date(workout.date);
                                     const failed =
                                         workout.mainSets.failed.length > 0;
 

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAction } from "@reduxjs/toolkit";
 import { liftOrder, type Lift, type Maxes } from "@/types/workout";
+import { getLocalDateKey } from "@/lib/dates";
 
 const getIncrease = (lift: Lift) => {
     switch (lift) {
@@ -118,10 +119,7 @@ const workoutSlice = createSlice({
             }>,
         ) => {
             const now = new Date();
-            const today = new Date()
-                .toISOString()
-                .slice(0, 10)
-                .replace(/-/g, "");
+            const today = getLocalDateKey(now);
             const entry: WorkoutHistoryEntry = {
                 date: now.toISOString(),
                 lift: state.currentLift,
