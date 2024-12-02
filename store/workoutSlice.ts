@@ -25,6 +25,7 @@ interface WorkoutHistoryEntry {
         completed: number[];
         failed: number[];
     };
+    weight?: number;
 }
 
 interface WorkoutState {
@@ -34,6 +35,7 @@ interface WorkoutState {
     weightUnit: "lbs" | "kg";
     currentLift: Lift;
     currentWeek: number;
+    latestWeight: number;
     preferredAssistance: {
         squat: string[];
         bench: string[];
@@ -60,6 +62,7 @@ const initialState: WorkoutState = {
     weightUnit: "lbs",
     currentLift: "press",
     currentWeek: 1,
+    latestWeight: 0,
     preferredAssistance: {
         squat: ["Leg Press", "Leg Curls"],
         bench: ["Dumbbell Chest Press", "Dumbbell Rows"],
@@ -116,6 +119,7 @@ const workoutSlice = createSlice({
                 completedAssistance: string[];
                 completedSets: number[];
                 failedSets: number[];
+                weight?: number;
             }>,
         ) => {
             const now = new Date();
@@ -133,7 +137,11 @@ const workoutSlice = createSlice({
                     completed: action.payload.completedSets,
                     failed: action.payload.failedSets,
                 },
+                weight: action.payload.weight,
             };
+            if (action.payload.weight) {
+                state.latestWeight = action.payload.weight;
+            }
             state.shouldIncrease[state.currentLift] =
                 state.shouldIncrease[state.currentLift] &&
                 action.payload.failedSets.length === 0;

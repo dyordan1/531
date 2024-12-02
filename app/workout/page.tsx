@@ -14,6 +14,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
 import { CheckIcon } from "@radix-ui/react-icons";
+import { Input } from "@/components/ui/input";
 
 function getAssistanceWork(lift: string): string[] {
     switch (lift) {
@@ -112,6 +113,7 @@ export default function WorkoutPage() {
     );
     const [elapsedTime, setElapsedTime] = useState(0);
     const [startTime, setStartTime] = useState<number | null>(null);
+    const [weight, setWeight] = useState(0);
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
@@ -129,8 +131,7 @@ export default function WorkoutPage() {
 
     const handleTimerToggle = () => {
         if (startTime === null) {
-            setStartTime(Date.now());
-            setElapsedTime(0);
+            setStartTime(Date.now() - elapsedTime * 1000);
         } else {
             setStartTime(null);
         }
@@ -160,9 +161,10 @@ export default function WorkoutPage() {
                 completedAssistance,
                 completedSets,
                 failedSets,
+                weight,
             }),
         );
-    }, [elapsedTime, completedAssistance, completedSets, failedSets]);
+    }, [elapsedTime, completedAssistance, completedSets, failedSets, weight]);
 
     useEffect(() => {
         if (isWorkoutComplete) {
@@ -210,6 +212,8 @@ export default function WorkoutPage() {
                         isRunning={startTime !== null}
                         elapsedTime={elapsedTime}
                         onToggle={handleTimerToggle}
+                        weight={weight}
+                        onWeightChange={setWeight}
                     />
 
                     <Section

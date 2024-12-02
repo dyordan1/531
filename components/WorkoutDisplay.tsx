@@ -24,6 +24,7 @@ export function WorkoutDisplay({ date }: { date: string }) {
         mainSets,
         selectedAssistance,
         completedAssistance,
+        weight,
     } = workout;
 
     const workoutSets = getWorkoutSets(currentWeek).map((set) => ({
@@ -45,11 +46,12 @@ export function WorkoutDisplay({ date }: { date: string }) {
                 {currentLift} Day - {weekDisplay}
             </PageHeader>
 
-            {duration !== 0 && (
+            {(duration !== 0 || weight !== 0) && (
                 <WorkoutTimer
                     isRunning={false}
                     elapsedTime={duration}
                     readOnly={true}
+                    weight={weight ?? 0}
                 />
             )}
 

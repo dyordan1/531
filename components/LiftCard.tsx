@@ -2,14 +2,21 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WeightDisplay } from "@/components/WeightDisplay";
 import { cn } from "@/lib/utils";
+import { PersonIcon } from "@radix-ui/react-icons";
 
 interface LiftCardProps {
     lift: string;
     weight: number;
+    bodyweight?: number;
     isActive?: boolean;
 }
 
-export function LiftCard({ lift, weight, isActive = false }: LiftCardProps) {
+export function LiftCard({
+    lift,
+    weight,
+    isActive = false,
+    bodyweight,
+}: LiftCardProps) {
     let title = lift;
 
     if (lift === "total") {
@@ -39,7 +46,7 @@ export function LiftCard({ lift, weight, isActive = false }: LiftCardProps) {
             </div>
             {isActive && (
                 <Badge
-                    variant="secondary"
+                    variant="default"
                     className="absolute -top-2 -right-2 bg-primary text-primary-foreground z-10"
                 >
                     Up Next
@@ -54,6 +61,15 @@ export function LiftCard({ lift, weight, isActive = false }: LiftCardProps) {
                     className="text-3xl font-bold text-primary"
                 />
             </CardContent>
+            {bodyweight && (
+                <Badge
+                    variant="default"
+                    className="absolute bottom-2 right-2 bg-primary text-primary-foreground z-10 text-xl flex items-center gap-1"
+                >
+                    <PersonIcon className="w-4 h-4" />
+                    <WeightDisplay weight={bodyweight} />
+                </Badge>
+            )}
         </Card>
     );
 }

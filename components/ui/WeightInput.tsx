@@ -2,9 +2,9 @@ import { Input } from "@/components/ui/input";
 import { kgToLbs, lbsToKg } from "@/lib/weight";
 import { useAppSelector } from "@/hooks/redux";
 
-interface WeightInputProps {
+interface WeightInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     value: number;
-    onChange: (value: number) => void;
+    onValueChange: (value: number) => void;
     id?: string;
     placeholder?: string;
     className?: string;
@@ -12,10 +12,11 @@ interface WeightInputProps {
 
 export function WeightInput({
     value,
-    onChange,
+    onValueChange,
     id,
     placeholder = "Enter weight",
     className,
+    ...rest
 }: WeightInputProps) {
     const weightUnit = useAppSelector((state) => state.workout.weightUnit);
 
@@ -30,7 +31,7 @@ export function WeightInput({
         const inputValue = e.target.value === "" ? 0 : Number(e.target.value);
         const valueInLbs =
             weightUnit === "kg" ? kgToLbs(inputValue) : inputValue;
-        onChange(valueInLbs);
+        onValueChange(valueInLbs);
     };
 
     return (
@@ -42,6 +43,7 @@ export function WeightInput({
             placeholder={placeholder}
             min="0"
             className={className}
+            {...rest}
         />
     );
 }

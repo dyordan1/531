@@ -3,7 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { setAllState } from "@/store/workoutSlice";
-import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
+import {
+    CheckIcon,
+    Cross1Icon,
+    PersonIcon,
+    StopwatchIcon,
+} from "@radix-ui/react-icons";
 import { formatTime } from "@/components/WorkoutTimer";
 import { liftOrder } from "@/types/workout";
 import { Calendar } from "@/components/ui/calendar";
@@ -16,6 +21,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { WeightDisplay } from "@/components/WeightDisplay";
+import { getWorkoutSets } from "@/lib/workout";
 
 export default function Home() {
     const router = useRouter();
@@ -120,7 +127,7 @@ export default function Home() {
                     width={32}
                     alt="Logo"
                 />
-                5/3/1 Workout Tracker
+                5/3/1 App
             </PageHeader>
 
             <main className="space-y-8">
@@ -231,6 +238,7 @@ export default function Home() {
                                         trainingMaxes.deadlift) /
                                     0.9
                                 }
+                                bodyweight={state.latestWeight}
                             />
                         </Section>
                     </>
@@ -318,6 +326,10 @@ export default function Home() {
                                 const date = new Date(workout.date);
                                 const failed =
                                     workout.mainSets.failed.length > 0;
+                                const sets = getWorkoutSets(workout.week);
+                                const maxWeight =
+                                    sets[sets.length - 1].percentage *
+                                    workout.trainingMax;
 
                                 return (
                                     <Button
@@ -340,18 +352,35 @@ export default function Home() {
                                             )}
                                             <div className="text-left">
                                                 <div className="font-medium capitalize">
-                                                    {workout.lift}
+                                                    {workout.lift} (
+                                                    <WeightDisplay
+                                                        weight={maxWeight}
+                                                    />
+                                                    )
                                                 </div>
                                                 <div className="text-sm opacity-90">
                                                     {date.toLocaleDateString()}
                                                 </div>
                                             </div>
                                         </div>
-                                        {workout.duration > 0 && (
-                                            <div className="text-sm">
-                                                {formatTime(workout.duration)}
-                                            </div>
-                                        )}
+                                        <div className="flex flex-col items-end text-sm">
+                                            {workout.duration > 0 && (
+                                                <div className="flex w-full justify-between items-center gap-1">
+                                                    <StopwatchIcon className="w-4 h-4" />
+                                                    {formatTime(
+                                                        workout.duration,
+                                                    )}
+                                                </div>
+                                            )}
+                                            {workout.weight && (
+                                                <span className="flex w-full justify-between items-center gap-1">
+                                                    <PersonIcon className="w-4 h-4" />
+                                                    <WeightDisplay
+                                                        weight={workout.weight}
+                                                    />
+                                                </span>
+                                            )}
+                                        </div>
                                     </Button>
                                 );
                             })}

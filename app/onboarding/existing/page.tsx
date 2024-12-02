@@ -93,7 +93,7 @@ export default function ExistingUserOnboarding() {
                                     ? maxes[lift] / 0.9
                                     : maxes[lift]
                             }
-                            onChange={(value) => {
+                            onValueChange={(value) => {
                                 const finalValue =
                                     maxType === "actual" ? value * 0.9 : value;
                                 dispatch(

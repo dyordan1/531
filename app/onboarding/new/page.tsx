@@ -93,7 +93,7 @@ export default function NewUserOnboarding() {
                                 <WeightInput
                                     id={lift}
                                     value={maxes[lift]}
-                                    onChange={(value) => {
+                                    onValueChange={(value) => {
                                         dispatch(
                                             setMaxes({
                                                 ...maxes,
