@@ -47,14 +47,15 @@ export default function ExistingUserOnboarding() {
     return (
         <PageContainer>
             <PageHeader
-                title="Edit Your Program"
                 description={
                     weightsInitialized
                         ? "You can edit your program manually here. The app will calculate your training maxes automatically based on history."
                         : "Welcome to 5/3/1. Let's get your numbers set up."
                 }
                 showBackButton
-            />
+            >
+                Edit Your Program
+            </PageHeader>
 
             <Section className="pt-4">
                 <div className="flex gap-4 sm:flex-row flex-col">
@@ -149,7 +150,7 @@ export default function ExistingUserOnboarding() {
                 </div>
             </Section>
 
-            <Section title="Your Training Maxes">
+            <Section title="Program Preview">
                 <div className="grid sm:grid-cols-2 gap-4">
                     {liftOrder.map((lift) => (
                         <LiftCard

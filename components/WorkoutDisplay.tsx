@@ -37,12 +37,13 @@ export function WorkoutDisplay({ date }: { date: string }) {
     return (
         <PageContainer>
             <PageHeader
-                title={`${currentLift} Day - ${weekDisplay}`}
                 description={`Completed on ${new Date(
                     workout.date,
                 ).toLocaleString()}`}
                 showBackButton
-            />
+            >
+                {currentLift} Day - {weekDisplay}
+            </PageHeader>
 
             {duration !== 0 && (
                 <WorkoutTimer

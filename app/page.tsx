@@ -14,10 +14,13 @@ import { getLocalDateKey } from "@/lib/dates";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 
 export default function Home() {
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const { resolvedTheme } = useTheme();
     const state = useAppSelector((state) => state.workout);
     const trainingMaxes = state.maxes;
     const currentWeek = state.currentWeek;
@@ -106,10 +109,19 @@ export default function Home() {
 
     return (
         <PageContainer>
-            <PageHeader
-                title="5/3/1 Workout Tracker"
-                description="Simplifying your strength journey"
-            />
+            <PageHeader description="Simplifying your strength journey">
+                <Image
+                    src={
+                        resolvedTheme === "dark"
+                            ? "/logo-dark.png"
+                            : "/logo-light.png"
+                    }
+                    height={32}
+                    width={32}
+                    alt="Logo"
+                />
+                5/3/1 Workout Tracker
+            </PageHeader>
 
             <main className="space-y-8">
                 {weightsInitialized ? (

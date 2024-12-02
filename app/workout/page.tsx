@@ -202,10 +202,9 @@ export default function WorkoutPage() {
             {todayWorkout !== undefined && <WorkoutDisplay date={today} />}
             {todayWorkout === undefined && (
                 <PageContainer>
-                    <PageHeader
-                        title={`${currentLift} Day - ${weekDisplay}`}
-                        showBackButton
-                    />
+                    <PageHeader showBackButton>
+                        {currentLift} Day - {weekDisplay}
+                    </PageHeader>
 
                     <WorkoutTimer
                         isRunning={startTime !== null}

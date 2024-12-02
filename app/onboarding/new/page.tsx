@@ -31,10 +31,11 @@ export default function NewUserOnboarding() {
             {step === "intro" && (
                 <div className="space-y-6">
                     <PageHeader
-                        title="Welcome to 5/3/1"
                         description="5/3/1 is a powerlifting program based on making consistent, steady progress."
                         showBackButton
-                    />
+                    >
+                        Welcome to 5/3/1
+                    </PageHeader>
 
                     <Section className="pt-4">
                         <h3 className="text-lg font-semibold">
@@ -77,10 +78,11 @@ export default function NewUserOnboarding() {
             {step === "maxes" && (
                 <div className="space-y-6">
                     <PageHeader
-                        title="Enter Your Current Maxes"
                         description="Enter your one-rep max for each lift. If you don't know your exact max, enter a weight you're confident you could lift once with good form."
                         showBackButton
-                    />
+                    >
+                        Enter Your Current Maxes
+                    </PageHeader>
 
                     <Section className="grid gap-6 pt-4">
                         {liftOrder.map((lift) => (
@@ -118,10 +120,11 @@ export default function NewUserOnboarding() {
             {step === "confirm" && (
                 <div className="space-y-6">
                     <PageHeader
-                        title="Your Training Maxes"
                         description="These are your training maxes (90% of your entered maxes). We'll use these numbers to calculate your working sets."
                         showBackButton
-                    />
+                    >
+                        Your Training Maxes
+                    </PageHeader>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                         {liftOrder.map((lift) => (
