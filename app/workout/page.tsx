@@ -110,28 +110,30 @@ export default function WorkoutPage() {
     const [completedAssistance, setCompletedAssistance] = useState<string[]>(
         [],
     );
-    const [isTimerRunning, setIsTimerRunning] = useState(false);
     const [elapsedTime, setElapsedTime] = useState(0);
+    const [startTime, setStartTime] = useState<number | null>(null);
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
 
-        if (isTimerRunning) {
+        if (startTime !== null) {
             intervalId = setInterval(() => {
-                setElapsedTime((prev) => prev + 1);
+                setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
             }, 1000);
         }
 
         return () => {
             if (intervalId) clearInterval(intervalId);
         };
-    }, [isTimerRunning]);
+    }, [startTime]);
 
     const handleTimerToggle = () => {
-        if (!isTimerRunning) {
+        if (startTime === null) {
+            setStartTime(Date.now());
             setElapsedTime(0);
+        } else {
+            setStartTime(null);
         }
-        setIsTimerRunning(!isTimerRunning);
     };
 
     const handleAssistanceToggle = (exercise: string) => {
@@ -164,7 +166,7 @@ export default function WorkoutPage() {
 
     useEffect(() => {
         if (isWorkoutComplete) {
-            setIsTimerRunning(false);
+            setStartTime(null);
             onWorkoutComplete();
         }
     }, [isWorkoutComplete, onWorkoutComplete]);
@@ -206,7 +208,7 @@ export default function WorkoutPage() {
                     />
 
                     <WorkoutTimer
-                        isRunning={isTimerRunning}
+                        isRunning={startTime !== null}
                         elapsedTime={elapsedTime}
                         onToggle={handleTimerToggle}
                     />
