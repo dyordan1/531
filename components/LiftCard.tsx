@@ -61,7 +61,7 @@ export function LiftCard({
                     className="text-3xl font-bold text-primary"
                 />
             </CardContent>
-            {bodyweight && (
+            {bodyweight !== undefined && bodyweight > 0 && (
                 <Badge
                     variant="default"
                     className="absolute bottom-2 right-2 bg-primary text-primary-foreground z-10 text-xl flex items-center gap-1"
