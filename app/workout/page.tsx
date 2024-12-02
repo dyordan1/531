@@ -14,7 +14,6 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
 import { CheckIcon } from "@radix-ui/react-icons";
-import { Input } from "@/components/ui/input";
 
 function getAssistanceWork(lift: string): string[] {
     switch (lift) {
