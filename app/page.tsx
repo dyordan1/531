@@ -240,6 +240,14 @@ export default function Home() {
                                 }
                                 bodyweight={state.latestWeight}
                             />
+                            <Button
+                                className="w-full"
+                                size="lg"
+                                variant="secondary"
+                                onClick={() => router.push("/progress")}
+                            >
+                                View Your Progress
+                            </Button>
                         </Section>
                     </>
                 ) : (
