@@ -20,6 +20,10 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
+
+ARG NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
+ENV NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}
+
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

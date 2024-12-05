@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { WeightUnitToggle } from "@/components/WeightUnitToggle";
 import { Footer } from "@/components/Footer";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -36,6 +37,9 @@ export default function RootLayout({
                     <WeightUnitToggle />
                     <Footer />
                 </Providers>
+                <GoogleAnalytics
+                    gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID!}
+                />
             </body>
         </html>
     );
