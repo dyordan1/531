@@ -5,15 +5,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
 import { liftOrder } from "@/types/workout";
-import {
-    Line,
-    LineChart,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    ResponsiveContainer,
-    Legend,
-} from "recharts";
+import { Line, LineChart, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -74,7 +66,7 @@ export default function ProgressPage() {
     const [showBodyweightRatio, setShowBodyweightRatio] = useState(false);
 
     const chartData: ChartData[] = Object.entries(history)
-        .reduce((acc: ChartData[], [_, entry]) => {
+        .reduce((acc: ChartData[], [, entry]) => {
             const weekStart = new Date(entry.date);
             weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
             const weekKey = weekStart.toLocaleDateString();

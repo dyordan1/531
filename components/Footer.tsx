@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function Footer() {
@@ -23,7 +24,7 @@ export function Footer() {
                         dobri.xyz
                     </Link>
                     <Link href="https://buymeacoffee.com/dobri" target="_blank">
-                        <img
+                        <Image
                             src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
                             alt="Buy Me A Coffee"
                             className="h-[32px]"
