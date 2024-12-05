@@ -19,11 +19,28 @@ import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { lbsToKg } from "@/lib/weight";
 import { getLocalDateKey } from "@/lib/dates";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface ChartData {
     date: string;
     [key: string]: string | number | boolean | undefined;
 }
+
+const calculateYAxisDomain = (data: ChartData[], hiddenLines: Set<string>) => {
+    let min = Infinity;
+    let max = -Infinity;
+
+    data.forEach((entry) => {
+        Object.keys(entry).forEach((key) => {
+            if (!hiddenLines.has(key) && typeof entry[key] === "number") {
+                min = Math.min(min, entry[key] as number);
+                max = Math.max(max, entry[key] as number);
+            }
+        });
+    });
+
+    return [min, max];
+};
 
 export default function ProgressPage() {
     const history = useAppSelector((state) => state.workout.history);
@@ -140,6 +157,10 @@ export default function ProgressPage() {
         (entry) => entry.weight !== undefined,
     );
 
+    const isSmallScreen = useMediaQuery("(max-width: 640px)");
+
+    const yAxisDomain = calculateYAxisDomain(chartData, hiddenLines);
+
     return (
         <PageContainer>
             <PageHeader
@@ -150,161 +171,154 @@ export default function ProgressPage() {
             </PageHeader>
 
             <div className="grid gap-6">
-                <Section title="All Lifts">
-                    <ChartContainer className="h-[400px]" config={chartConfig}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart
-                                data={chartData}
-                                margin={{
-                                    top: 5,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
+                <Section
+                    variant={isSmallScreen ? "plain" : "default"}
+                    title="All Lifts"
+                >
+                    <ChartContainer className="w-full" config={chartConfig}>
+                        <LineChart
+                            data={chartData}
+                            margin={{
+                                top: isSmallScreen ? 0 : 5,
+                                right: isSmallScreen ? 0 : 20,
+                                left: isSmallScreen ? 0 : 20,
+                                bottom: isSmallScreen ? 0 : 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="date"
+                                fontSize={12}
+                                hide={isSmallScreen}
+                            />
+                            <YAxis
+                                fontSize={12}
+                                hide={isSmallScreen}
+                                domain={yAxisDomain}
+                                label={{
+                                    value: showBodyweightRatio
+                                        ? "× Bodyweight"
+                                        : weightUnit.toUpperCase(),
+                                    angle: -90,
+                                    position: "insideLeft",
+                                    style: { fontSize: 12 },
                                 }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" fontSize={12} />
-                                <YAxis
-                                    fontSize={12}
-                                    label={{
-                                        value: showBodyweightRatio
-                                            ? "× Bodyweight"
-                                            : weightUnit.toUpperCase(),
-                                        angle: -90,
-                                        position: "insideLeft",
-                                        style: { fontSize: 12 },
-                                    }}
-                                />
-                                <ChartTooltip
-                                    content={({ active, payload }) => {
-                                        if (!active || !payload?.length)
-                                            return null;
-                                        return (
-                                            <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                                <div className="grid gap-2">
-                                                    <span className="font-medium">
-                                                        Date:{" "}
-                                                        {
-                                                            payload[0].payload
-                                                                .date
-                                                        }
-                                                    </span>
-                                                    {payload.map((entry) => {
-                                                        if (
-                                                            entry.value ===
-                                                            undefined
-                                                        )
-                                                            return null;
+                            />
+                            <ChartTooltip
+                                content={({ active, payload }) => {
+                                    if (!active || !payload?.length)
+                                        return null;
+                                    return (
+                                        <div className="rounded-lg border bg-background p-2 shadow-sm">
+                                            <div className="grid gap-2">
+                                                <span className="font-medium">
+                                                    Date:{" "}
+                                                    {payload[0].payload.date}
+                                                </span>
+                                                {payload.map((entry) => {
+                                                    if (
+                                                        entry.value ===
+                                                        undefined
+                                                    )
+                                                        return null;
 
-                                                        const dataKey =
-                                                            entry.dataKey as keyof typeof chartConfig;
-                                                        const config =
-                                                            chartConfig[
-                                                                dataKey
-                                                            ];
-                                                        if (!config)
-                                                            return null;
+                                                    const dataKey =
+                                                        entry.dataKey as keyof typeof chartConfig;
+                                                    const config =
+                                                        chartConfig[dataKey];
+                                                    if (!config) return null;
 
-                                                        return (
-                                                            <div
-                                                                key={
-                                                                    entry.dataKey
-                                                                }
-                                                                className="grid grid-cols-2 gap-2"
+                                                    return (
+                                                        <div
+                                                            key={entry.dataKey}
+                                                            className="grid grid-cols-2 gap-2"
+                                                        >
+                                                            <span
+                                                                className="font-medium"
+                                                                style={{
+                                                                    color: `var(--color-${entry.dataKey})`,
+                                                                }}
                                                             >
-                                                                <span
-                                                                    className="font-medium"
-                                                                    style={{
-                                                                        color: `var(--color-${entry.dataKey})`,
-                                                                    }}
-                                                                >
-                                                                    {
-                                                                        config.label
-                                                                    }
-                                                                    :
-                                                                </span>
-                                                                <span>
-                                                                    {showBodyweightRatio
-                                                                        ? Math.round(
-                                                                              (entry.value as number) *
-                                                                                  100,
-                                                                          ) /
-                                                                          100
-                                                                        : Math.round(
-                                                                              entry.value as number,
-                                                                          )}{" "}
-                                                                    {showBodyweightRatio
-                                                                        ? "× BW"
-                                                                        : weightUnit}
-                                                                </span>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
+                                                                {config.label}:
+                                                            </span>
+                                                            <span>
+                                                                {showBodyweightRatio
+                                                                    ? Math.round(
+                                                                          (entry.value as number) *
+                                                                              100,
+                                                                      ) / 100
+                                                                    : Math.round(
+                                                                          entry.value as number,
+                                                                      )}{" "}
+                                                                {showBodyweightRatio
+                                                                    ? "× BW"
+                                                                    : weightUnit}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
+                                        </div>
+                                    );
+                                }}
+                            />
+                            <Legend
+                                onClick={(e) => toggleLine(e.dataKey as string)}
+                                wrapperStyle={{ cursor: "pointer" }}
+                            />
+                            {liftOrder.map((lift) => (
+                                <Line
+                                    key={lift}
+                                    type="monotone"
+                                    dataKey={lift}
+                                    name={chartConfig[lift].label}
+                                    stroke={`var(--color-${lift})`}
+                                    strokeWidth={2}
+                                    dot={(props) => {
+                                        const failed =
+                                            props.payload[`${lift}Failed`];
+                                        if (!showFailures || !failed)
+                                            return <g key={props.key}></g>;
+                                        const size = 4;
+                                        return (
+                                            <g key={props.key}>
+                                                <line
+                                                    x1={props.cx - size}
+                                                    y1={props.cy - size}
+                                                    x2={props.cx + size}
+                                                    y2={props.cy + size}
+                                                    stroke={`var(--color-${lift})`}
+                                                    strokeWidth={2}
+                                                />
+                                                <line
+                                                    x1={props.cx - size}
+                                                    y1={props.cy + size}
+                                                    x2={props.cx + size}
+                                                    y2={props.cy - size}
+                                                    stroke={`var(--color-${lift})`}
+                                                    strokeWidth={2}
+                                                />
+                                            </g>
                                         );
                                     }}
-                                />
-                                <Legend
-                                    onClick={(e) =>
-                                        toggleLine(e.dataKey as string)
-                                    }
-                                    wrapperStyle={{ cursor: "pointer" }}
-                                />
-                                {liftOrder.map((lift) => (
-                                    <Line
-                                        key={lift}
-                                        type="monotone"
-                                        dataKey={lift}
-                                        name={chartConfig[lift].label}
-                                        stroke={`var(--color-${lift})`}
-                                        strokeWidth={2}
-                                        dot={(props) => {
-                                            const failed =
-                                                props.payload[`${lift}Failed`];
-                                            if (!showFailures || !failed)
-                                                return <g key={props.key}></g>;
-                                            const size = 4;
-                                            return (
-                                                <g key={props.key}>
-                                                    <line
-                                                        x1={props.cx - size}
-                                                        y1={props.cy - size}
-                                                        x2={props.cx + size}
-                                                        y2={props.cy + size}
-                                                        stroke={`var(--color-${lift})`}
-                                                        strokeWidth={2}
-                                                    />
-                                                    <line
-                                                        x1={props.cx - size}
-                                                        y1={props.cy + size}
-                                                        x2={props.cx + size}
-                                                        y2={props.cy - size}
-                                                        stroke={`var(--color-${lift})`}
-                                                        strokeWidth={2}
-                                                    />
-                                                </g>
-                                            );
-                                        }}
-                                        activeDot={{ r: 8 }}
-                                        connectNulls
-                                        hide={hiddenLines.has(lift)}
-                                    />
-                                ))}
-                                <Line
-                                    type="monotone"
-                                    dataKey="weight"
-                                    name={chartConfig.weight.label}
-                                    stroke={`var(--color-weight)`}
-                                    strokeWidth={2}
-                                    strokeDasharray="5 5"
-                                    dot={false}
-                                    activeDot={false}
+                                    activeDot={{ r: 8 }}
                                     connectNulls
-                                    hide={hiddenLines.has("weight")}
+                                    hide={hiddenLines.has(lift)}
                                 />
-                            </LineChart>
-                        </ResponsiveContainer>
+                            ))}
+                            <Line
+                                type="monotone"
+                                dataKey="weight"
+                                name={chartConfig.weight.label}
+                                stroke={`var(--color-weight)`}
+                                strokeWidth={2}
+                                strokeDasharray="5 5"
+                                dot={false}
+                                activeDot={false}
+                                connectNulls
+                                hide={hiddenLines.has("weight")}
+                            />
+                        </LineChart>
                     </ChartContainer>
                     <div className="flex items-center space-x-4 mt-4">
                         <div className="flex items-center space-x-2">
