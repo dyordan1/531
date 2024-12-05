@@ -23,6 +23,12 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import { WeightDisplay } from "@/components/WeightDisplay";
 import { getWorkoutSets } from "@/lib/workout";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Home() {
     const router = useRouter();
@@ -240,14 +246,42 @@ export default function Home() {
                                 }
                                 bodyweight={state.latestWeight}
                             />
-                            <Button
-                                className="w-full"
-                                size="lg"
-                                variant="secondary"
-                                onClick={() => router.push("/progress")}
-                            >
-                                View Your Progress
-                            </Button>
+                            {Object.values(workoutHistory).length >= 16 && (
+                                <Button
+                                    className="w-full mt-4"
+                                    size="lg"
+                                    variant="secondary"
+                                    onClick={() => router.push("/progress")}
+                                    disabled={
+                                        Object.values(workoutHistory).length <
+                                        16
+                                    }
+                                >
+                                    View Your Progress
+                                </Button>
+                            )}
+                            {Object.values(workoutHistory).length < 16 && (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <span tabIndex={0}>
+                                                <Button
+                                                    className="w-full mt-4"
+                                                    size="lg"
+                                                    variant="secondary"
+                                                    disabled
+                                                >
+                                                    View Your Progress
+                                                </Button>
+                                            </span>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            You need at least 16 workouts to
+                                            view progress
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            )}
                         </Section>
                     </>
                 ) : (

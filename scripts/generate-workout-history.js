@@ -32,7 +32,7 @@ function generateWorkoutData() {
         latestWeight: startingWeight, // This will be updated as we generate history
     };
 
-    const startDate = new Date("2024-01-01");
+    const startDate = new Date("2022-01-01");
     const history = {};
     const lifts = ["press", "deadlift", "bench", "squat"];
     const trainingMaxes = {
@@ -48,12 +48,10 @@ function generateWorkoutData() {
     let week = 1;
 
     // Generate entries for a full year
-    for (let i = 0; i < 4 * 4 * 12; i++) {
+    for (let i = 0; i < 4 * 4 * 36; i++) {
         // 4 lifts * 4 weeks * 12 months
         // Small random weight fluctuation (-0.4 to +0.6 lbs)
         currentWeight += Math.random() * 1 - 0.4;
-        // Round to 1 decimal place
-        currentWeight = Math.round(currentWeight * 10) / 10;
 
         const dateKey = currentDate
             .toISOString()
@@ -76,7 +74,8 @@ function generateWorkoutData() {
             selectedAssistance: assistanceExercises[currentLift],
             completedAssistance: assistanceExercises[currentLift],
             mainSets,
-            weight: Math.round(currentWeight), // Add weight to each history entry
+            // Record weight in 30% of the days
+            ...(Math.random() < 0.3 && { weight: Math.round(currentWeight) }),
         };
 
         // Advance to next workout
@@ -90,7 +89,11 @@ function generateWorkoutData() {
                 Object.keys(trainingMaxes).forEach((lift) => {
                     if (Math.random() < 0.7) {
                         // 70% chance to increase
-                        trainingMaxes[lift] += 5;
+                        // Bigger increments for lower body lifts
+                        const increment = ["deadlift", "squat"].includes(lift)
+                            ? 10
+                            : 5;
+                        trainingMaxes[lift] += increment;
                     }
                 });
             }

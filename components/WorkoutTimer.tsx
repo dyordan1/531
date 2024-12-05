@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { WeightInput } from "@/components/ui/WeightInput";
 import { useAppSelector } from "@/hooks/redux";
 import { WeightDisplay } from "./WeightDisplay";
-import { Label } from "@radix-ui/react-label";
+import { Label } from "@/components/ui/label";
 
 interface WorkoutTimerProps {
     isRunning: boolean;

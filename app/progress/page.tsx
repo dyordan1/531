@@ -17,10 +17,12 @@ import {
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { lbsToKg } from "@/lib/weight";
+import { getLocalDateKey } from "@/lib/dates";
 
 interface ChartData {
     date: string;
-    [key: string]: string | number | boolean;
+    [key: string]: string | number | boolean | undefined;
 }
 
 export default function ProgressPage() {
@@ -56,32 +58,64 @@ export default function ProgressPage() {
 
     const chartData: ChartData[] = Object.entries(history)
         .reduce((acc: ChartData[], [_, entry]) => {
-            const date = new Date(entry.date).toLocaleDateString();
-            const existingEntry = acc.find((item) => item.date === date);
+            const weekStart = new Date(entry.date);
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
+            const weekKey = weekStart.toLocaleDateString();
 
+            const convertWeight = (weight: number) =>
+                weightUnit === "kg" ? lbsToKg(weight) : weight;
+
+            const lastWeight =
+                history[
+                    Object.keys(history)
+                        .filter(
+                            (key) =>
+                                history[key].weight &&
+                                key < getLocalDateKey(weekStart),
+                        )
+                        .sort(
+                            (a, b) =>
+                                new Date(history[b].date).getTime() -
+                                new Date(history[a].date).getTime(),
+                        )[0]
+                ]?.weight;
+
+            const currentWeight = entry.weight ?? lastWeight;
+            const convertedWeight = currentWeight
+                ? convertWeight(currentWeight)
+                : undefined;
+            const convertedTrainingMax = convertWeight(entry.trainingMax);
+
+            if (showBodyweightRatio && !convertedWeight) {
+                return acc;
+            }
+
+            const existingEntry = acc.find((item) => item.date === weekKey);
             if (existingEntry) {
-                if (showBodyweightRatio && entry.weight) {
+                if (showBodyweightRatio && convertedWeight) {
                     existingEntry[entry.lift] = +(
-                        entry.trainingMax / entry.weight
+                        convertedTrainingMax / convertedWeight
                     ).toFixed(2);
                     existingEntry.weight = 1;
                 } else {
-                    existingEntry[entry.lift] = entry.trainingMax;
-                    if (entry.weight) {
-                        existingEntry.weight = entry.weight;
+                    existingEntry[entry.lift] = convertedTrainingMax;
+                    if (convertedWeight) {
+                        existingEntry.weight = convertedWeight;
                     }
                 }
                 existingEntry[`${entry.lift}Failed`] =
                     entry.mainSets.failed.length > 0;
             } else {
                 acc.push({
-                    date,
+                    date: weekKey,
                     [entry.lift]:
-                        showBodyweightRatio && entry.weight
-                            ? +(entry.trainingMax / entry.weight).toFixed(2)
-                            : entry.trainingMax,
+                        showBodyweightRatio && convertedWeight
+                            ? +(convertedTrainingMax / convertedWeight).toFixed(
+                                  2,
+                              )
+                            : convertedTrainingMax,
                     [`${entry.lift}Failed`]: entry.mainSets.failed.length > 0,
-                    weight: showBodyweightRatio ? 1 : entry.weight,
+                    weight: showBodyweightRatio ? 1 : convertedWeight,
                 });
             }
             return acc;
@@ -101,6 +135,10 @@ export default function ProgressPage() {
             return newSet;
         });
     };
+
+    const hasBodyweightRecords = Object.values(history).some(
+        (entry) => entry.weight !== undefined,
+    );
 
     return (
         <PageContainer>
@@ -174,16 +212,27 @@ export default function ProgressPage() {
                                                                 }
                                                                 className="grid grid-cols-2 gap-2"
                                                             >
-                                                                <span className="font-medium">
+                                                                <span
+                                                                    className="font-medium"
+                                                                    style={{
+                                                                        color: `var(--color-${entry.dataKey})`,
+                                                                    }}
+                                                                >
                                                                     {
                                                                         config.label
                                                                     }
                                                                     :
                                                                 </span>
                                                                 <span>
-                                                                    {
-                                                                        entry.value
-                                                                    }{" "}
+                                                                    {showBodyweightRatio
+                                                                        ? Math.round(
+                                                                              (entry.value as number) *
+                                                                                  100,
+                                                                          ) /
+                                                                          100
+                                                                        : Math.round(
+                                                                              entry.value as number,
+                                                                          )}{" "}
                                                                     {showBodyweightRatio
                                                                         ? "× BW"
                                                                         : weightUnit}
@@ -273,21 +322,23 @@ export default function ProgressPage() {
                                 Show failed sets
                             </label>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="showBodyweightRatio"
-                                checked={showBodyweightRatio}
-                                onCheckedChange={(checked) =>
-                                    setShowBodyweightRatio(!!checked)
-                                }
-                            />
-                            <label
-                                htmlFor="showBodyweightRatio"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                                Show as bodyweight ratio
-                            </label>
-                        </div>
+                        {hasBodyweightRecords && (
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="show-bodyweight-ratio"
+                                    checked={showBodyweightRatio}
+                                    onCheckedChange={(checked) =>
+                                        setShowBodyweightRatio(!!checked)
+                                    }
+                                />
+                                <label
+                                    htmlFor="show-bodyweight-ratio"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                    Show as bodyweight ratio
+                                </label>
+                            </div>
+                        )}
                     </div>
                 </Section>
             </div>
